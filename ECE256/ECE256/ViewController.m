@@ -41,6 +41,21 @@
     
     [self.startButton setEnabled:TRUE];
     [self.stopButton setEnabled:FALSE];
+    
+    /*
+    motionManager = [[CMMotionManager alloc] init];
+    motionManager.gyroUpdateInterval = 1.0/60.0;
+    if (motionManager.gyroAvailable) {
+        opQ = [[NSOperationQueue currentQueue] retain];
+        gyroHandler = ^ (CMGyroData *gyroData, NSError *error) {
+            CMRotationRate rotate = gyroData.rotationRate;
+            // handle rotation-rate data here......
+        };
+    } else {
+        NSLog(@"No gyroscope on device.");
+        toggleButton.enabled = NO;
+        [motionManager release];
+    }*/
 }
 
 - (void)viewDidUnload
@@ -84,6 +99,7 @@
 - (void)accelerometer:(UIAccelerometer *)accelerometer didAccelerate:(UIAcceleration *)acceleration 
 {
     //acceleration.x, acceleration.y, acceleration.z
+
 }
 
 - (void) SampleFeature:(NSTimer *) timer 
