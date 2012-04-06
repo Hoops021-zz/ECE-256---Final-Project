@@ -1,5 +1,5 @@
 //
-//  CSVWriter.h
+//  Feature.h
 //  ECE256
 //
 //  Created by Troy Ferrell on 4/6/12.
@@ -8,11 +8,9 @@
 
 #import <Foundation/Foundation.h>
 
-@interface CSVWriter : NSObject
+@interface Feature : NSObject
 {
-
+    // define variables here
 }
-
-
 
 @end

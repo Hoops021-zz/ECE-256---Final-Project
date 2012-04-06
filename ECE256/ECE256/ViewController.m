@@ -9,15 +9,20 @@
 #import "ViewController.h"
 
 @interface ViewController ()
-
+#define ACCELEROMETER_SAMPLING_FREQUENCY 90.0
 @end
 
 @implementation ViewController
 
+@synthesize accelerometer;
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-	// Do any additional setup after loading the view, typically from a nib.
+    
+    self.accelerometer = [UIAccelerometer sharedAccelerometer];
+    self.accelerometer.updateInterval = 1.0/ACCELEROMETER_SAMPLING_FREQUENCY;
+    self.accelerometer.delegate = self;
 }
 
 - (void)viewDidUnload
@@ -28,11 +33,18 @@
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) 
+    {
         return (interfaceOrientation != UIInterfaceOrientationPortraitUpsideDown);
-    } else {
+    } else 
+    {
         return YES;
     }
+}
+
+- (void)accelerometer:(UIAccelerometer *)accelerometer didAccelerate:(UIAcceleration *)acceleration 
+{
+    //acceleration.x, acceleration.y, acceleration.z
 }
 
 @end

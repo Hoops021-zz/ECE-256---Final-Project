@@ -8,6 +8,11 @@
 
 #import <UIKit/UIKit.h>
 
-@interface ViewController : UIViewController
+@interface ViewController : UIViewController <UIAccelerometerDelegate>
+{
+    UIAccelerometer *accelerometer;
+}
+
+@property (nonatomic, retain) UIAccelerometer *accelerometer;
 
 @end

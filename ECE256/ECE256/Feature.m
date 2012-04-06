@@ -1,24 +1,19 @@
 //
-//  CSVWriter.m
+//  Feature.m
 //  ECE256
 //
 //  Created by Troy Ferrell on 4/6/12.
 //  Copyright (c) 2012 Troy Ferrell. All rights reserved.
 //
 
-#import "CSVWriter.h"
+#import "Feature.h"
 
-@implementation CSVWriter
+@implementation Feature
 
 
-- (void) writeFeature:(Feature *) f
+- (NSString *) ToString
 {
-    
-}
-
-- (void) saveFile
-{
-
+    return @"";
 }
 
 @end
