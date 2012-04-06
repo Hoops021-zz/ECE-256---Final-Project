@@ -11,7 +11,11 @@
 @interface Feature : NSObject
 {
     // define variables here
+    int featureGrouping;
+    
 }
+
+@property (nonatomic) int featureGrouping;
 
 - (NSString *) ToString;
 
