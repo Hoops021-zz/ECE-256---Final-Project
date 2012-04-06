@@ -10,6 +10,9 @@
 
 #import "Feature.h"
 #import "CSVWriter.h"
+#import "GryoData.h"
+
+#import <CoreMotion/CoreMotion.h>
 
 @interface ViewController ()
 
@@ -22,9 +25,18 @@
 
 @implementation ViewController
 
+@synthesize motionManager;
+@synthesize gyroHandler;
+@synthesize opQ;
+
 @synthesize accelerometer;
 @synthesize fileWriter;
 @synthesize timer;
+
+@synthesize accelerometerData;
+@synthesize gryoscopeData;
+
+@synthesize userTouchedPhone;
 
 @synthesize startButton;
 @synthesize stopButton;
@@ -33,29 +45,39 @@
 {
     [super viewDidLoad];
     
+    // INIT Acclerometer paramters
     self.accelerometer = [UIAccelerometer sharedAccelerometer];
     self.accelerometer.updateInterval = 1.0/ACCELEROMETER_SAMPLING_FREQUENCY;
     self.accelerometer.delegate = self;
     
+    // INIT CSV file writing
     self.fileWriter = [[CSVWriter alloc] init];
     
+    // INIT GUI 
     [self.startButton setEnabled:TRUE];
     [self.stopButton setEnabled:FALSE];
     
-    /*
-    motionManager = [[CMMotionManager alloc] init];
-    motionManager.gyroUpdateInterval = 1.0/60.0;
-    if (motionManager.gyroAvailable) {
+    // INIT Data structures for each frame
+    self.accelerometerData = [[NSMutableArray alloc] initWithCapacity:1];
+    self.gryoscopeData = [[NSMutableArray alloc] initWithCapacity:1];
+    
+    // INIT Gryo paramters
+    self.motionManager = [[CMMotionManager alloc] init];
+    self.motionManager.gyroUpdateInterval = 1.0/ACCELEROMETER_SAMPLING_FREQUENCY;
+    if (self.motionManager.gyroAvailable) 
+    {
         opQ = [[NSOperationQueue currentQueue] retain];
-        gyroHandler = ^ (CMGyroData *gyroData, NSError *error) {
-            CMRotationRate rotate = gyroData.rotationRate;
-            // handle rotation-rate data here......
+        self.gyroHandler = ^ (CMGyroData *gyroData, NSError *error) 
+        {
+            CMRotationRate rotateData = gyroData.rotationRate;
+            GryoData *data = [[GryoData alloc] initWithData:rotateData];
+            [self.gryoscopeData addObject:data];
         };
-    } else {
+    }
+    else 
+    {
         NSLog(@"No gyroscope on device.");
-        toggleButton.enabled = NO;
-        [motionManager release];
-    }*/
+    }
 }
 
 - (void)viewDidUnload
@@ -69,7 +91,8 @@
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) 
     {
         return (interfaceOrientation != UIInterfaceOrientationPortraitUpsideDown);
-    } else 
+    } 
+    else 
     {
         return YES;
     }
@@ -83,42 +106,84 @@
                                    userInfo:nil
                                     repeats:YES]; 
     
+    // Update GUI appropriately
     [self.startButton setEnabled:FALSE];
     [self.startButton setEnabled:TRUE];
+    
+    // Clear old data
+    [self.accelerometerData removeAllObjects];
+    [self.gryoscopeData removeAllObjects];
+    
+    [self.motionManager startGyroUpdatesToQueue:opQ withHandler:self.gyroHandler];
 }
 
 - (IBAction) stopButtonPressed:(id)sender
 {
+    // Stop Timer
     [self.timer invalidate];
     self.timer = nil;
     
+    // Update GUI appropriately
     [self.startButton setEnabled:FALSE];
     [self.startButton setEnabled:TRUE]; 
+    
+    [self.motionManager stopGyroUpdates];
 }
 
 - (void)accelerometer:(UIAccelerometer *)accelerometer didAccelerate:(UIAcceleration *)acceleration 
 {
-    //acceleration.x, acceleration.y, acceleration.z
+    // Add acceleration data to structure
+    [self.accelerometerData addObject:acceleration];
+}
 
+-(void) touchesBegan: (NSSet *) touches withEvent: (UIEvent *) event 
+{    
+    NSSet *allTouches = [event allTouches];
+    if([allTouches count] > 0)
+    {
+        self.userTouchedPhone = true;
+    }
 }
 
 - (void) SampleFeature:(NSTimer *) timer 
 {
-    // create feature
-    Feature *newFeature = [[Feature alloc] init];
+    // If getting data because user touched phone, then ignore
+    if(!self.userTouchedPhone)
+    {
+        // create feature
+        // TODO: Need to figure out feature grouping
+        Feature *newFeature = [[Feature alloc] init];
+        
+        // add values to feature
+        
+        
+        // Clear old data for new frame
+        [self.accelerometerData removeAllObjects];
+        [self.gryoscopeData removeAllObjects];
+        
+        // Write feature to file
+        [self.fileWriter writeFeature:newFeature atFile:FILE_NAME];
+    }
     
-    // add values to feature
-    
-    // reset data collected
-    
-    // Write feature to file
-    [self.fileWriter writeFeature:newFeature atFile:FILE_NAME];
+    self.userTouchedPhone = FALSE;
 }
 
 - (void) dealloc
 {
     [self.fileWriter release];
     self.fileWriter = nil;
+    
+    [motionManager release];
+    self.motionManager = nil;
+    
+    [self.opQ release];
+    self.opQ = nil;
+    
+    [self.accelerometerData release];
+    self.accelerometerData = nil;
+    
+    [self.gryoscopeData release];
+    self.gryoscopeData = nil;
     
     [super dealloc];
 }

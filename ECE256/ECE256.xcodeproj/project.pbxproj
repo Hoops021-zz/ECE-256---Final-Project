@@ -19,6 +19,7 @@
 		822F0F62152EEA2800BDA153 /* CSVWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = 822F0F61152EEA2800BDA153 /* CSVWriter.m */; };
 		822F0F69152EED8F00BDA153 /* Feature.m in Sources */ = {isa = PBXBuildFile; fileRef = 822F0F68152EED8F00BDA153 /* Feature.m */; };
 		822F0F78152EFB4C00BDA153 /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 822F0F77152EFB4C00BDA153 /* CoreMotion.framework */; };
+		822F0F7B152F267100BDA153 /* GryoData.m in Sources */ = {isa = PBXBuildFile; fileRef = 822F0F7A152F267000BDA153 /* GryoData.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -41,6 +42,8 @@
 		822F0F67152EED8F00BDA153 /* Feature.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Feature.h; sourceTree = "<group>"; };
 		822F0F68152EED8F00BDA153 /* Feature.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Feature.m; sourceTree = "<group>"; };
 		822F0F77152EFB4C00BDA153 /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
+		822F0F79152F267000BDA153 /* GryoData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GryoData.h; sourceTree = "<group>"; };
+		822F0F7A152F267000BDA153 /* GryoData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GryoData.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -95,6 +98,8 @@
 				822F0F61152EEA2800BDA153 /* CSVWriter.m */,
 				822F0F67152EED8F00BDA153 /* Feature.h */,
 				822F0F68152EED8F00BDA153 /* Feature.m */,
+				822F0F79152F267000BDA153 /* GryoData.h */,
+				822F0F7A152F267000BDA153 /* GryoData.m */,
 				822F0F52152EE92D00BDA153 /* ViewController.h */,
 				822F0F53152EE92D00BDA153 /* ViewController.m */,
 				822F0F55152EE92D00BDA153 /* ViewController_iPhone.xib */,
@@ -184,6 +189,7 @@
 				822F0F54152EE92D00BDA153 /* ViewController.m in Sources */,
 				822F0F62152EEA2800BDA153 /* CSVWriter.m in Sources */,
 				822F0F69152EED8F00BDA153 /* Feature.m in Sources */,
+				822F0F7B152F267100BDA153 /* GryoData.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

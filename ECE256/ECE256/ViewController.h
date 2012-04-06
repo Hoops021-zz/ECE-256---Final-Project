@@ -8,21 +8,41 @@
 
 #import <UIKit/UIKit.h>
 
+#import <CoreMotion/CoreMotion.h>
+
 @class CSVWriter;
 
 @interface ViewController : UIViewController <UIAccelerometerDelegate>
 {
+    CMMotionManager *motionManager;
+    CMGyroHandler gyroHandler;
+    NSOperationQueue *opQ;
+    
     UIAccelerometer *accelerometer;
     CSVWriter *fileWriter;
     NSTimer *timer;
+    
+    NSMutableArray *accelerometerData;
+    NSMutableArray *gryoscopeData;
+    
+    BOOL userTouchedPhone;
     
     IBOutlet UIButton *startButton;
     IBOutlet UIButton *stopButton;
 }
 
+@property (nonatomic, retain) CMMotionManager *motionManager;
+@property (nonatomic) CMGyroHandler gyroHandler;
+@property (nonatomic, retain) NSOperationQueue *opQ;
+
 @property (nonatomic, retain) UIAccelerometer *accelerometer;
 @property (nonatomic, retain) CSVWriter *fileWriter;
 @property (nonatomic, retain) NSTimer *timer;
+
+@property (nonatomic, retain) NSMutableArray *accelerometerData;
+@property (nonatomic, retain) NSMutableArray *gryoscopeData;
+
+@property (nonatomic) BOOL userTouchedPhone;
 
 @property (nonatomic, retain) IBOutlet UIButton *startButton;
 @property (nonatomic, retain) IBOutlet UIButton *stopButton;
