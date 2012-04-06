@@ -8,10 +8,16 @@
 
 #import <Foundation/Foundation.h>
 
+@class Feature;
+
 @interface CSVWriter : NSObject
 {
-
+    
 }
+
+- (void) writeFeature:(Feature *) f atFile:(NSString *) fileName;
+
+- (NSString *) getFilePath: (NSString*) fileName;
 
 
 

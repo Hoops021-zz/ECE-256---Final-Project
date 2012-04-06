@@ -13,4 +13,6 @@
     // define variables here
 }
 
+- (NSString *) ToString;
+
 @end
