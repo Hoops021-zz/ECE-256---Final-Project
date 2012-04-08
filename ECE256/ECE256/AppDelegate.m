@@ -7,8 +7,9 @@
 //
 
 #import "AppDelegate.h"
-
 #import "ViewController.h"
+#import "RIOInterface.h"
+
 
 @implementation AppDelegate
 
@@ -24,6 +25,13 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    
+    /**RIO session setup */
+	RIOInterface *rioRef = [RIOInterface sharedInstance];
+	[rioRef setSampleRate:22050];
+	[rioRef setFrequency:294];
+	[rioRef initializeAudioSession];
+    
     self.window = [[[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]] autorelease];
     // Override point for customization after application launch.
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {

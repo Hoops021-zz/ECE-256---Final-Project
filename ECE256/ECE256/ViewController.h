@@ -7,7 +7,18 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "RIODelegate.h"
 
-@interface ViewController : UIViewController
+@class RIOInterface;
+
+@interface ViewController : UIViewController <RIODelegate>
+{
+    RIOInterface *rioRef;
+    float currentFrequency;
+}
+
+@property(nonatomic, assign) RIOInterface *rioRef;
+@property(nonatomic, assign) float currentFrequency;
+
 
 @end
