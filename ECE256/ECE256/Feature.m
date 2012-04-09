@@ -101,12 +101,14 @@
     double kurtosis_Y = ((1.0/size)*kurtosisSum_Y) / pow((1.0/size)*squaredSum_Y_Bottom, 2.0) - 3.0;
     double kurtosis_Z = ((1.0/size)*kurtosisSum_Z) / pow((1.0/size)*squaredSum_Z_Bottom, 2.0) - 3.0;
     
-    //[NSString stringWithFormat:@"%f %f %f", min_X, min_Y, min_Z];
-    //[NSString stringWithFormat:@"%f %f %f", max_X, max_Y, max_Z];
-    //[NSString stringWithFormat:@"%f %f %f", skewness_X, skewness_Y, skewness_Z];
-    //[NSString stringWithFormat:@"%f %f %f", kurtosis_X, kurtosis_Y, kurtosis_Z];
-    //[NSString stringWithFormat:@"%f %f %f", oneNorm, infinityNorm, forbeniusNorm];
-    return [NSString stringWithFormat:@"%f %f %f", sum_X/size, sum_Y/size, sum_Z/size];
+    NSString *str1 = [NSString stringWithFormat:@"%f %f %f", min_X, min_Y, min_Z];
+    NSString *str2 = [NSString stringWithFormat:@"%f %f %f", max_X, max_Y, max_Z];
+    NSString *str3 = [NSString stringWithFormat:@"%f %f %f", skewness_X, skewness_Y, skewness_Z];
+    NSString *str4 = [NSString stringWithFormat:@"%f %f %f", kurtosis_X, kurtosis_Y, kurtosis_Z];
+    NSString *str5 = [NSString stringWithFormat:@"%f %f %f", oneNorm, infinityNorm, forbeniusNorm];
+    NSString *str6 = [NSString stringWithFormat:@"%f %f %f", sum_X/size, sum_Y/size, sum_Z/size];
+    
+    return [NSString stringWithFormat:@"%@, %@, %@, %@, %@, %@", str1, str2, str3, str4, str5, str6];
 }
 
 - (NSString *) processGryo:(NSMutableArray *) gryoData
@@ -181,12 +183,13 @@
     double kurtosis_Y = ((1.0/size)*kurtosisSum_Y) / pow((1.0/size)*squaredSum_Y_Bottom, 2.0) - 3.0;
     double kurtosis_Z = ((1.0/size)*kurtosisSum_Z) / pow((1.0/size)*squaredSum_Z_Bottom, 2.0) - 3.0;
     
-    //[NSString stringWithFormat:@"%f %f %f", min_X, min_Y, min_Z];
-    //[NSString stringWithFormat:@"%f %f %f", max_X, max_Y, max_Z];
-    //[NSString stringWithFormat:@"%f %f %f", skewness_X, skewness_Y, skewness_Z];
-    //[NSString stringWithFormat:@"%f %f %f", kurtosis_X, kurtosis_Y, kurtosis_Z];
-    //[NSString stringWithFormat:@"%f %f %f", oneNorm, infinityNorm, forbeniusNorm];
-    return [NSString stringWithFormat:@"%f %f %f", sum_X/size, sum_Y/size, sum_Z/size];
+    NSString *str1 = [NSString stringWithFormat:@"%f %f %f", min_X, min_Y, min_Z];
+    NSString *str2 = [NSString stringWithFormat:@"%f %f %f", max_X, max_Y, max_Z];
+    NSString *str3 = [NSString stringWithFormat:@"%f %f %f", skewness_X, skewness_Y, skewness_Z];
+    NSString *str4 = [NSString stringWithFormat:@"%f %f %f", kurtosis_X, kurtosis_Y, kurtosis_Z];
+    NSString *str5 = [NSString stringWithFormat:@"%f %f %f", oneNorm, infinityNorm, forbeniusNorm];
+    NSString *str6 = [NSString stringWithFormat:@"%f %f %f", sum_X/size, sum_Y/size, sum_Z/size];
+    return [NSString stringWithFormat:@"%@, %@, %@, %@, %@, %@", str1, str2, str3, str4, str5, str6];
 }
 
 

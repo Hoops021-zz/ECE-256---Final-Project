@@ -18,6 +18,11 @@
 @property (nonatomic) int featureGrouping;
 
 - (id) initWithData:(NSMutableArray *) acceleromterData withGryo:(NSMutableArray *) gryoData;
+
+- (NSString *) processAcclerometer:(NSMutableArray *) acceleromterData;
+
+- (NSString *) processGryo:(NSMutableArray *) gryoData;
+
 - (NSString *) ToString;
 
 @end

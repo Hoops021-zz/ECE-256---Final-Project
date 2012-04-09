@@ -171,17 +171,20 @@
         // TODO: Need to figure out feature grouping
         Feature *newFeature = [[Feature alloc] init];
         
-        // add values to feature
+        NSString* accellFeatures = [newFeature processAcclerometer:self.accelerometerData];
+        NSString* gryoFeatures = [newFeature processGryo:self.gryoscopeData];
+        // microphone data
         
+        NSString *featureString = [NSString stringWithFormat:@"%@, %@, %@", accellFeatures, gryoFeatures, nil];
         
         // Clear old data for new frame
         [self.accelerometerData removeAllObjects];
         [self.gryoscopeData removeAllObjects];
         [self.micFFTData removeAllObjects];
-
         
         // Write feature to file
-        [self.fileWriter writeFeature:newFeature atFile:FILE_NAME];
+        [self.fileWriter writeString:featureString atFile:FILE_NAME];
+        //[self.fileWriter writeFeature:newFeature atFile:FILE_NAME];
     }
     
     self.userTouchedPhone = FALSE;

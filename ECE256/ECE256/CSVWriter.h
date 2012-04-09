@@ -17,6 +17,8 @@
 
 - (void) writeFeature:(Feature *) f atFile:(NSString *) fileName;
 
+- (void) writeString:(NSString *) str atFile:(NSString *) fileName;
+
 - (NSString *) getFilePath: (NSString*) fileName;
 
 

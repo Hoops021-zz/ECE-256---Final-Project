@@ -18,6 +18,11 @@
     [line writeToFile:[self getFilePath: fileName] atomically:YES encoding:NSUTF8StringEncoding error:nil];
 }
 
+- (void) writeString:(NSString *) str atFile:(NSString *) fileName
+{
+    [str writeToFile:[self getFilePath: fileName] atomically:YES encoding:NSUTF8StringEncoding error:nil];
+}
+
 - (NSString *) getFilePath: (NSString*) fileName
 {
 	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
