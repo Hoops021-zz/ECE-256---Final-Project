@@ -20,6 +20,8 @@
 #define FEATURE_SAMPLING_FREQUENCY 100 
 #define FILE_NAME @"TestData.csv"
 
+#define MAX_FEATURES 10
+
 @end
 
 @implementation ViewController
@@ -36,8 +38,9 @@
 @synthesize gryoscopeData;
 @synthesize micFFTData;
 @synthesize userTouchedPhone;
-@synthesize startButton;
-@synthesize stopButton;
+
+@synthesize numOfFeaturesLabel;
+@synthesize appStatusLabel;
 
 - (void)viewDidLoad
 {
@@ -53,10 +56,6 @@
     
     // INIT CSV file writing
     self.fileWriter = [[CSVWriter alloc] init];
-    
-    // INIT GUI 
-    [self.startButton setEnabled:TRUE];
-    [self.stopButton setEnabled:FALSE];
     
     // INIT Data structures for each frame
     self.accelerometerData = [[NSMutableArray alloc] initWithCapacity:1];
@@ -101,7 +100,7 @@
     }
 }
 
-- (IBAction) startButtonPressed:(id)sender
+- (void) startCollecitng
 {
      self.timer = [NSTimer scheduledTimerWithTimeInterval:1.0/FEATURE_SAMPLING_FREQUENCY
                                      target:self
@@ -109,15 +108,14 @@
                                    userInfo:nil
                                     repeats:YES]; 
     
-    // Update GUI appropriately
-    [self.startButton setEnabled:FALSE];
-    [self.startButton setEnabled:TRUE];
-    
     // Clear old data
     [self.accelerometerData removeAllObjects];
     [self.gryoscopeData removeAllObjects];
     [self.micFFTData removeAllObjects];
-
+    
+    featuresCollected = 0;
+    [self.numOfFeaturesLabel setText:[NSString stringWithFormat:@"%d", featuresCollected]];
+    [self.appStatusLabel setText:@"Collecting..."];
     
     [self.motionManager startGyroUpdatesToQueue:opQ withHandler:self.gyroHandler];
     [self.rioRef startListening:self];
@@ -133,15 +131,11 @@
 	
 }
 
-- (IBAction) stopButtonPressed:(id)sender
+- (void) stopCollecting
 {
     // Stop Timer
     [self.timer invalidate];
     self.timer = nil;
-    
-    // Update GUI appropriately
-    [self.startButton setEnabled:FALSE];
-    [self.startButton setEnabled:TRUE]; 
     
     [self.motionManager stopGyroUpdates];
     [self.rioRef stopListening];
@@ -174,9 +168,8 @@
         NSString* accellFeatures = [newFeature processAcclerometer:self.accelerometerData];
         NSString* gryoFeatures = [newFeature processGryo:self.gryoscopeData];
         NSString* micFFTFeatures = [newFeature processMicFFT:self.micFFTData];
-        // microphone data
         
-        NSString *featureString = [NSString stringWithFormat:@"%@, %@, %@", accellFeatures, gryoFeatures, micFFTFeatures, nil];
+        NSString *featureString = [NSString stringWithFormat:@"%@, %@, %@", accellFeatures, gryoFeatures, micFFTFeatures];
         
         // Clear old data for new frame
         [self.accelerometerData removeAllObjects];
@@ -186,9 +179,24 @@
         // Write feature to file
         [self.fileWriter writeString:featureString atFile:FILE_NAME];
         //[self.fileWriter writeFeature:newFeature atFile:FILE_NAME];
+        
+        featuresCollected++;
+        [self.numOfFeaturesLabel setText:[NSString stringWithFormat:@"%d", featuresCollected]];
+        if(featuresCollected == MAX_FEATURES)
+        {
+            [self stopCollecting];
+            [self.appStatusLabel setText:@"DONE!"];
+        }
     }
     
     self.userTouchedPhone = FALSE;
+}
+
+- (bool) AppearsTapped
+{
+// scan through accleerometer values for x,y,z 
+    // see if all values below threshold(ie. 0.0001)
+    return true;
 }
 
 - (void) dealloc

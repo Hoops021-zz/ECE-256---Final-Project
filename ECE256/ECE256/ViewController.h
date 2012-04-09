@@ -27,8 +27,11 @@
     NSMutableArray *gryoscopeData;
     NSMutableArray *micFFTData;
     BOOL userTouchedPhone;    
-    IBOutlet UIButton *startButton;
-    IBOutlet UIButton *stopButton;
+
+    int featuresCollected;
+    
+    IBOutlet UILabel *numOfFeaturesLabel;
+    IBOutlet UILabel *appStatusLabel;
 }
 
 @property(nonatomic, assign) RIOInterface *rioRef;
@@ -43,11 +46,11 @@
 @property (nonatomic, retain) NSMutableArray *gryoscopeData;
 @property (nonatomic, retain) NSMutableArray *micFFTData;
 @property (nonatomic) BOOL userTouchedPhone;
-@property (nonatomic, retain) IBOutlet UIButton *startButton;
-@property (nonatomic, retain) IBOutlet UIButton *stopButton;
 
-- (IBAction) startButtonPressed:(id)sender;
-- (IBAction) stopButtonPressed:(id)sender;
+@property (nonatomic, retain) IBOutlet UILabel *numOfFeaturesLabel;
+@property (nonatomic, retain) IBOutlet UILabel *appStatusLabel;
+
+
 - (void) SampleFeature:(NSTimer *) timer;
 
 @end
