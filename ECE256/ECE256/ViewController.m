@@ -9,7 +9,7 @@
 #import "ViewController.h"
 #import "RIOInterface.h"
 #import "KeyHelper.h"
-#import "Feature.h"
+#import "Observation.h"
 #import "CSVWriter.h"
 #import "GryoData.h"
 #import <CoreMotion/CoreMotion.h>
@@ -17,10 +17,10 @@
 @interface ViewController ()
 
 #define ACCELEROMETER_SAMPLING_FREQUENCY 90.0
-#define FEATURE_SAMPLING_FREQUENCY 100 
+#define OBSERVATION_SAMPLING_FREQUENCY 1 
 #define FILE_NAME @"TestData.csv"
 
-#define MAX_FEATURES 10
+#define MAX_OBSERVATIONS 3
 
 @end
 
@@ -39,7 +39,7 @@
 @synthesize micFFTData;
 @synthesize userTouchedPhone;
 
-@synthesize numOfFeaturesLabel;
+@synthesize numOfObservationsLabel;
 @synthesize appStatusLabel;
 
 - (void)viewDidLoad
@@ -61,7 +61,6 @@
     self.accelerometerData = [[NSMutableArray alloc] initWithCapacity:1];
     self.gryoscopeData = [[NSMutableArray alloc] initWithCapacity:1];
     self.micFFTData = [[NSMutableArray alloc] initWithCapacity:1];
-
     
     // INIT Gryo paramters
     self.motionManager = [[CMMotionManager alloc] init];
@@ -80,6 +79,8 @@
     {
         NSLog(@"No gyroscope on device.");
     }
+    
+    [self startCollecitng];
 }
 
 - (void)viewDidUnload
@@ -102,9 +103,9 @@
 
 - (void) startCollecitng
 {
-     self.timer = [NSTimer scheduledTimerWithTimeInterval:1.0/FEATURE_SAMPLING_FREQUENCY
+     self.timer = [NSTimer scheduledTimerWithTimeInterval:1.0/OBSERVATION_SAMPLING_FREQUENCY
                                      target:self
-                                   selector:@selector(SampleFeature:)
+                                   selector:@selector(SampleObservation:)
                                    userInfo:nil
                                     repeats:YES]; 
     
@@ -113,8 +114,8 @@
     [self.gryoscopeData removeAllObjects];
     [self.micFFTData removeAllObjects];
     
-    featuresCollected = 0;
-    [self.numOfFeaturesLabel setText:[NSString stringWithFormat:@"%d", featuresCollected]];
+    observationsCollected = 0;
+    [self.numOfObservationsLabel setText:[NSString stringWithFormat:@"%d", observationsCollected]];
     [self.appStatusLabel setText:@"Collecting..."];
     
     [self.motionManager startGyroUpdatesToQueue:opQ withHandler:self.gyroHandler];
@@ -124,7 +125,7 @@
 - (void)frequencyChangedWithValue:(float)newFrequency{
 	NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
 	self.currentFrequency = newFrequency;
-    NSLog (@"%f",    newFrequency);
+    //NSLog (@"%f",    newFrequency);
     [self.micFFTData addObject:[NSNumber numberWithFloat:newFrequency]];
 	[pool drain];
 	pool = nil;
@@ -156,47 +157,53 @@
     }
 }
 
-- (void) SampleFeature:(NSTimer *) timer 
+- (void) SampleObservation:(NSTimer *) timer 
 {
     // If getting data because user touched phone, then ignore
-    if(!self.userTouchedPhone)
+    if(!self.userTouchedPhone && [self tappedOccured:self.accelerometerData])
     {
-        // create feature
-        // TODO: Need to figure out feature grouping
-        Feature *newFeature = [[Feature alloc] init];
+        // create observation
+        Observation *newObservation = [[Observation alloc] init];
         
-        NSString* accellFeatures = [newFeature processAcclerometer:self.accelerometerData];
-        NSString* gryoFeatures = [newFeature processGryo:self.gryoscopeData];
-        NSString* micFFTFeatures = [newFeature processMicFFT:self.micFFTData];
+        NSString* accelObservation = [newObservation processAcclerometer:self.accelerometerData];
+        NSString* gryoObservation = [newObservation processGryo:self.gryoscopeData];
+        NSString* micFFTObservation = [newObservation processMicFFT:self.micFFTData];
         
-        NSString *featureString = [NSString stringWithFormat:@"%@, %@, %@", accellFeatures, gryoFeatures, micFFTFeatures];
+        NSString *observationString = [NSString stringWithFormat:@"%@, %@, %@\n", accelObservation, gryoObservation, micFFTObservation];
         
-        // Clear old data for new frame
-        [self.accelerometerData removeAllObjects];
-        [self.gryoscopeData removeAllObjects];
-        [self.micFFTData removeAllObjects];
-        
-        // Write feature to file
-        [self.fileWriter writeString:featureString atFile:FILE_NAME];
+        // Write Observation to file
+        [self.fileWriter saveString:observationString];
         //[self.fileWriter writeFeature:newFeature atFile:FILE_NAME];
         
-        featuresCollected++;
-        [self.numOfFeaturesLabel setText:[NSString stringWithFormat:@"%d", featuresCollected]];
-        if(featuresCollected == MAX_FEATURES)
+        observationsCollected++;
+        [self.numOfObservationsLabel setText:[NSString stringWithFormat:@"%d", observationsCollected]];
+        if(observationsCollected == MAX_OBSERVATIONS)
         {
             [self stopCollecting];
+            [self.fileWriter writeFile:FILE_NAME];
             [self.appStatusLabel setText:@"DONE!"];
         }
     }
     
+    // Clear old data for new frame
+    [self.accelerometerData removeAllObjects];
+    [self.gryoscopeData removeAllObjects];
+    [self.micFFTData removeAllObjects];
+    
     self.userTouchedPhone = FALSE;
 }
 
-- (bool) AppearsTapped
+- (bool) tappedOccured:(NSMutableArray *) acceleration
 {
-// scan through accleerometer values for x,y,z 
-    // see if all values below threshold(ie. 0.0001)
-    return true;
+    for(int i = 0; i < [acceleration count]; i++)
+    {
+        if([[acceleration objectAtIndex:i] z] > -1)
+        {
+            return true;
+        }
+    }
+    
+    return FALSE;
 }
 
 - (void) dealloc

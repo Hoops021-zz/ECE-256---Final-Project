@@ -12,12 +12,14 @@
 
 @interface CSVWriter : NSObject
 {
-    
+    NSMutableArray *lines;
 }
 
 - (void) writeFeature:(Feature *) f atFile:(NSString *) fileName;
 
-- (void) writeString:(NSString *) str atFile:(NSString *) fileName;
+- (void) saveString:(NSString *) str;
+
+- (void) writeFile:(NSString *) fileName;
 
 - (NSString *) getFilePath: (NSString*) fileName;
 

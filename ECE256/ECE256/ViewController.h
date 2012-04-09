@@ -28,9 +28,9 @@
     NSMutableArray *micFFTData;
     BOOL userTouchedPhone;    
 
-    int featuresCollected;
+    int observationsCollected;
     
-    IBOutlet UILabel *numOfFeaturesLabel;
+    IBOutlet UILabel *numOfObservationsLabel;
     IBOutlet UILabel *appStatusLabel;
 }
 
@@ -47,7 +47,7 @@
 @property (nonatomic, retain) NSMutableArray *micFFTData;
 @property (nonatomic) BOOL userTouchedPhone;
 
-@property (nonatomic, retain) IBOutlet UILabel *numOfFeaturesLabel;
+@property (nonatomic, retain) IBOutlet UILabel *numOfObservationsLabel;
 @property (nonatomic, retain) IBOutlet UILabel *appStatusLabel;
 
 
