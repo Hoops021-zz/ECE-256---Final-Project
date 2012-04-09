@@ -163,7 +163,7 @@ OSStatus RenderFFTCallback (void					*inRefCon,
 		
 		// Update the UI with our newly acquired frequency value.
 		float frequencyValue = bin*(THIS->sampleRate/bufferCapacity);
-        [THIS->listener frequencyChangedWithValue:bin*(THIS->sampleRate/bufferCapacity)];
+        [THIS->listener frequencyChangedWithValue:frequencyValue];
 //        if (frequencyValue < 200 && frequencyValue > 100) {
 //            printf("Thump! \n");
 //            printf("Dominant frequency: %f   bin: %d \n", frequencyValue, bin);

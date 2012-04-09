@@ -77,7 +77,7 @@
 - (void)printASBD:(AudioStreamBasicDescription)asbd;
 
 #pragma mark Listener Controls
-- (void)startListening:(id<RIODelegate>*)aListener;
+- (void)startListening:(id<RIODelegate>)aListener;
 - (void)stopListening;
 
 #pragma mark Generic Audio Controls

@@ -9,18 +9,15 @@
 #import "ViewController.h"
 #import "RIOInterface.h"
 #import "KeyHelper.h"
-
 #import "Feature.h"
 #import "CSVWriter.h"
 #import "GryoData.h"
-
 #import <CoreMotion/CoreMotion.h>
 
 @interface ViewController ()
 
 #define ACCELEROMETER_SAMPLING_FREQUENCY 90.0
 #define FEATURE_SAMPLING_FREQUENCY 100 
-
 #define FILE_NAME @"TestData.csv"
 
 @end
@@ -32,25 +29,22 @@
 @synthesize motionManager;
 @synthesize gyroHandler;
 @synthesize opQ;
-
 @synthesize accelerometer;
 @synthesize fileWriter;
 @synthesize timer;
-
 @synthesize accelerometerData;
 @synthesize gryoscopeData;
-
+@synthesize micFFTData;
 @synthesize userTouchedPhone;
-
 @synthesize startButton;
 @synthesize stopButton;
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    rioRef = [RIOInterface sharedInstance];
-    [rioRef startListening:self];
-	// Do any additional setup after loading the view, typically from a nib.
+    
+    // INIT Microphone FFT
+    self.rioRef = [RIOInterface sharedInstance];
     
     // INIT Acclerometer paramters
     self.accelerometer = [UIAccelerometer sharedAccelerometer];
@@ -67,6 +61,8 @@
     // INIT Data structures for each frame
     self.accelerometerData = [[NSMutableArray alloc] initWithCapacity:1];
     self.gryoscopeData = [[NSMutableArray alloc] initWithCapacity:1];
+    self.micFFTData = [[NSMutableArray alloc] initWithCapacity:1];
+
     
     // INIT Gryo paramters
     self.motionManager = [[CMMotionManager alloc] init];
@@ -120,13 +116,18 @@
     // Clear old data
     [self.accelerometerData removeAllObjects];
     [self.gryoscopeData removeAllObjects];
+    [self.micFFTData removeAllObjects];
+
     
     [self.motionManager startGyroUpdatesToQueue:opQ withHandler:self.gyroHandler];
+    [self.rioRef startListening:self];
+
 }
 - (void)frequencyChangedWithValue:(float)newFrequency{
 	NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
 	self.currentFrequency = newFrequency;
     NSLog (@"%f",    newFrequency);
+    [self.micFFTData addObject:[NSNumber numberWithFloat:newFrequency]];
 	[pool drain];
 	pool = nil;
 	
@@ -143,6 +144,7 @@
     [self.startButton setEnabled:TRUE]; 
     
     [self.motionManager stopGyroUpdates];
+    [self.rioRef stopListening];
 }
 
 - (void)accelerometer:(UIAccelerometer *)accelerometer didAccelerate:(UIAcceleration *)acceleration 
@@ -175,6 +177,8 @@
         // Clear old data for new frame
         [self.accelerometerData removeAllObjects];
         [self.gryoscopeData removeAllObjects];
+        [self.micFFTData removeAllObjects];
+
         
         // Write feature to file
         [self.fileWriter writeFeature:newFeature atFile:FILE_NAME];
@@ -199,6 +203,9 @@
     
     [self.gryoscopeData release];
     self.gryoscopeData = nil;
+    
+    [self.micFFTData release];
+    self.micFFTData = nil;
     
     [super dealloc];
 }
