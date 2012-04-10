@@ -192,6 +192,23 @@
     return [NSString stringWithFormat:@"%@, %@, %@, %@, %@, %@", str1, str2, str3, str4, str5, str6];
 }
 
+- (NSString *) processMicFFT:(NSMutableArray *) micFFTData
+{
+    double size = [micFFTData count];
+    float sum;
+    
+    for(int i = 0; i < size; i++)
+    {
+        float point = [[micFFTData objectAtIndex:i] floatValue];
+        sum += point;
+    }
+    
+    NSString *str1 = [NSString stringWithFormat:@"%f", sum / size];
+
+    return [NSString stringWithFormat:@"%@", str1];
+
+}
+
 
 - (NSString *) ToString
 {

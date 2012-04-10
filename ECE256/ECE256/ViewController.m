@@ -173,9 +173,10 @@
         
         NSString* accellFeatures = [newFeature processAcclerometer:self.accelerometerData];
         NSString* gryoFeatures = [newFeature processGryo:self.gryoscopeData];
+        NSString* micFFTFeatures = [newFeature processMicFFT:self.micFFTData];
         // microphone data
         
-        NSString *featureString = [NSString stringWithFormat:@"%@, %@, %@", accellFeatures, gryoFeatures, nil];
+        NSString *featureString = [NSString stringWithFormat:@"%@, %@, %@", accellFeatures, gryoFeatures, micFFTFeatures, nil];
         
         // Clear old data for new frame
         [self.accelerometerData removeAllObjects];

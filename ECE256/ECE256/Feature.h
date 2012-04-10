@@ -23,6 +23,8 @@
 
 - (NSString *) processGryo:(NSMutableArray *) gryoData;
 
+- (NSString *) processMicFFT:(NSMutableArray *) micFFTData;
+
 - (NSString *) ToString;
 
 @end
