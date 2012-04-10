@@ -195,17 +195,21 @@
 - (NSString *) processMicFFT:(NSMutableArray *) micFFTData
 {
     double size = [micFFTData count];
-    float sum;
+    float point = [[micFFTData objectAtIndex:0] floatValue];
+    float sum = point;
+    float min = point;
+    float max = point;
     
-    for(int i = 0; i < size; i++)
+    for(int i = 1; i < size; i++)
     {
         float point = [[micFFTData objectAtIndex:i] floatValue];
         sum += point;
+        min = MIN(min, point);
+        max = MAX(max, point);
     }
     
-    NSString *str1 = [NSString stringWithFormat:@"%f", sum / size];
 
-    return [NSString stringWithFormat:@"%@", str1];
+    return [NSString stringWithFormat:@"%f, %f, %f", sum/size, min, max];
 
 }
 
