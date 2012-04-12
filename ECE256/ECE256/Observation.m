@@ -29,7 +29,6 @@
 - (NSString *) processAcclerometer:(NSMutableArray *) acceleromterData
 {
     double size = [acceleromterData count];
-    NSLog(@"%d", (int)size);
     double sum_X = 0, sum_Y = 0, sum_Z = 0;
     double min_X = DBL_MAX, min_Y = DBL_MAX, min_Z = DBL_MAX;
     double max_X = DBL_MIN, max_Y = DBL_MIN, max_Z = DBL_MIN;
@@ -115,6 +114,7 @@
 - (NSString *) processGryo:(NSMutableArray *) gryoData
 {
     double size = [gryoData count];
+
     double sum_X = 0, sum_Y = 0, sum_Z = 0;
     double min_X = DBL_MAX, min_Y = DBL_MAX, min_Z = DBL_MAX;
     double max_X = DBL_MIN, max_Y = DBL_MIN, max_Z = DBL_MIN;
@@ -196,6 +196,7 @@
 - (NSString *) processMicFFT:(NSMutableArray *) micFFTData
 {
     double size = [micFFTData count];
+//    NSLog(@"%d", (int)size);
     double sum = 0, min = DBL_MAX, max = DBL_MIN;
     for(int i = 0; i < size; i++)
     {

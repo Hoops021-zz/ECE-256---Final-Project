@@ -20,7 +20,9 @@
 #define OBSERVATION_SAMPLING_FREQUENCY 1 
 #define FILE_NAME @"TestData.csv"
 
-#define MAX_OBSERVATIONS 3
+#define MAX_OBSERVATIONS 8
+#define TABLE_CALIBRATION_FACTOR .985
+
 
 @end
 
@@ -125,7 +127,6 @@
 - (void)frequencyChangedWithValue:(float)newFrequency{
 	NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
 	self.currentFrequency = newFrequency;
-    //NSLog (@"%f",    newFrequency);
     [self.micFFTData addObject:[NSNumber numberWithFloat:newFrequency]];
 	[pool drain];
 	pool = nil;
@@ -197,8 +198,12 @@
 {
     for(int i = 0; i < [acceleration count]; i++)
     {
-        if([[acceleration objectAtIndex:i] z] > -1)
+        //NSLog(@"x: %f", [[acceleration objectAtIndex:i] x]);
+        //NSLog(@"y: %f", [[acceleration objectAtIndex:i] y]);
+        //NSLog(@"z: %f", [[acceleration objectAtIndex:i] z]);
+        if([[acceleration objectAtIndex:i] z] > (-1 * TABLE_CALIBRATION_FACTOR))
         {
+            NSLog(@"YEE");
             return true;
         }
     }
