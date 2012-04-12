@@ -17,8 +17,8 @@
     if(self = [super init])
     {
         self.x = rotate.x;
-        self.x = rotate.y;
-        self.x = rotate.z;
+        self.y = rotate.y;
+        self.z = rotate.z;
     }
     
     return self;

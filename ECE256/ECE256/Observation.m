@@ -30,8 +30,8 @@
 {
     double size = [acceleromterData count];
     double sum_X = 0, sum_Y = 0, sum_Z = 0;
-    double min_X = DBL_MAX, min_Y = DBL_MAX, min_Z = DBL_MAX;
-    double max_X = DBL_MIN, max_Y = DBL_MIN, max_Z = DBL_MIN;
+    double min_X = 100, min_Y = 100, min_Z = 100;
+    double max_X = -100, max_Y = -100, max_Z = -100;
    
     double oneNorm_X = 0, oneNorm_Y = 0, oneNorm_Z = 0;
     double infinityNorm = 0, fNorm = 0; 
@@ -53,13 +53,15 @@
                        + fabs( pow(acceleration.y, 2))
                        + fabs( pow(acceleration.z, 2));
         
+        NSLog(@"%f", acceleration.x);
+        
         if(acceleration.x < min_X) min_X = acceleration.x;
         if(acceleration.y < min_Y) min_Y = acceleration.y;
         if(acceleration.z < min_Z) min_Z = acceleration.z;
         
+        if(acceleration.z > max_Z) max_Z = acceleration.z;
         if(acceleration.x > max_X) max_X = acceleration.x;
         if(acceleration.y > max_Y) max_Y = acceleration.y;
-        if(acceleration.z > max_Z) max_Z = acceleration.z;
     }
     
     double oneNorm = MAX(MAX(oneNorm_X, oneNorm_Y), oneNorm_Z);

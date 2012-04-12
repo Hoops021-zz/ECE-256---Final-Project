@@ -20,7 +20,7 @@
 #define OBSERVATION_SAMPLING_FREQUENCY 1 
 #define FILE_NAME @"TestData.csv"
 
-#define MAX_OBSERVATIONS 8
+#define MAX_OBSERVATIONS 3
 #define TABLE_CALIBRATION_FACTOR .985
 
 
@@ -74,6 +74,7 @@
         {
             CMRotationRate rotateData = gyroData.rotationRate;
             GryoData *data = [[GryoData alloc] initWithData:rotateData];
+            //NSLog(@"%.12f - %.12f - %.12f", rotateData.x, rotateData.y, rotateData.z);
             [self.gryoscopeData addObject:data];
         };
     }
