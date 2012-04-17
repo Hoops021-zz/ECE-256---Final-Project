@@ -28,6 +28,7 @@
 		E531F289152F5AE000BCE6B5 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E531F288152F5AE000BCE6B5 /* CoreFoundation.framework */; };
 		E531F28D152F5B0D00BCE6B5 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E531F28C152F5B0D00BCE6B5 /* Accelerate.framework */; };
 		E531F290152F5E8700BCE6B5 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E531F28E152F5D4A00BCE6B5 /* CoreAudio.framework */; };
+		E5E8EAE5153D3B4500073E44 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E5E8EAE4153D3B4500073E44 /* SenTestingKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -47,7 +48,7 @@
 		822F0F59152EE92D00BDA153 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/ViewController_iPad.xib; sourceTree = "<group>"; };
 		822F0F60152EEA2800BDA153 /* CSVWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSVWriter.h; sourceTree = "<group>"; };
 		822F0F61152EEA2800BDA153 /* CSVWriter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSVWriter.m; sourceTree = "<group>"; };
-		822F0F67152EED8F00BDA153 /* Observation.h */ = {isa = PBXFileReference; fileEncoding = 4; path = Observation.h; sourceTree = "<group>"; };
+		822F0F67152EED8F00BDA153 /* Observation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Observation.h; sourceTree = "<group>"; };
 		822F0F68152EED8F00BDA153 /* Observation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Observation.m; sourceTree = "<group>"; };
 		822F0F77152EFB4C00BDA153 /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
 		822F0F79152F267000BDA153 /* GryoData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GryoData.h; sourceTree = "<group>"; };
@@ -68,6 +69,7 @@
 		E531F28E152F5D4A00BCE6B5 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		E5CCFD64153134E900D7720A /* CADebugPrintf.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CADebugPrintf.cpp; sourceTree = "<group>"; };
 		E5CCFD65153134E900D7720A /* CADebugPrintf.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CADebugPrintf.h; sourceTree = "<group>"; };
+		E5E8EAE4153D3B4500073E44 /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -75,6 +77,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E5E8EAE5153D3B4500073E44 /* SenTestingKit.framework in Frameworks */,
 				E531F290152F5E8700BCE6B5 /* CoreAudio.framework in Frameworks */,
 				E531F28D152F5B0D00BCE6B5 /* Accelerate.framework in Frameworks */,
 				E531F289152F5AE000BCE6B5 /* CoreFoundation.framework in Frameworks */,
@@ -110,6 +113,7 @@
 		822F0F3F152EE92D00BDA153 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				E5E8EAE4153D3B4500073E44 /* SenTestingKit.framework */,
 				E531F28E152F5D4A00BCE6B5 /* CoreAudio.framework */,
 				822F0F42152EE92D00BDA153 /* Foundation.framework */,
 				822F0F77152EFB4C00BDA153 /* CoreMotion.framework */,
@@ -335,6 +339,10 @@
 		822F0F5E152EE92D00BDA153 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_APPS_DIR)/Xcode.app/Contents/Developer/Library/Frameworks\"",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "ECE256/ECE256-Prefix.pch";
 				"HEADER_SEARCH_PATHS[arch=*]" = "";
@@ -347,6 +355,10 @@
 		822F0F5F152EE92D00BDA153 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_APPS_DIR)/Xcode.app/Contents/Developer/Library/Frameworks\"",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "ECE256/ECE256-Prefix.pch";
 				INFOPLIST_FILE = "ECE256/ECE256-Info.plist";

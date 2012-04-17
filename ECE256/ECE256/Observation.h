@@ -25,6 +25,8 @@
 
 - (NSString *) processMicFFT:(NSMutableArray *) micFFTData;
 
+- (NSString *) processMic:(NSMutableArray *) micData;
+
 - (NSString *) ToString;
 
 @end

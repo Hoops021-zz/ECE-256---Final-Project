@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "RIODelegate.h"
 #import <CoreMotion/CoreMotion.h>
+#import <AVFoundation/AVFoundation.h>
 
 @class RIOInterface;
 @class CSVWriter;
@@ -26,12 +27,17 @@
     NSMutableArray *accelerometerData;
     NSMutableArray *gryoscopeData;
     NSMutableArray *micFFTData;
+    NSMutableArray *micData;
     BOOL userTouchedPhone;    
 
     int observationsCollected;
     
     IBOutlet UILabel *numOfObservationsLabel;
     IBOutlet UILabel *appStatusLabel;
+    
+    AVAudioRecorder *recorder; // Set up AVAudioRecorder instance variable
+    NSTimer *levelTimer;
+
 }
 
 @property(nonatomic, assign) RIOInterface *rioRef;
@@ -45,6 +51,7 @@
 @property (nonatomic, retain) NSMutableArray *accelerometerData;
 @property (nonatomic, retain) NSMutableArray *gryoscopeData;
 @property (nonatomic, retain) NSMutableArray *micFFTData;
+@property (nonatomic, retain) NSMutableArray *micData;
 @property (nonatomic) BOOL userTouchedPhone;
 
 @property (nonatomic, retain) IBOutlet UILabel *numOfObservationsLabel;

@@ -17,6 +17,7 @@
 @interface ViewController ()
 
 #define ACCELEROMETER_SAMPLING_FREQUENCY 90.0
+#define MICROPHONE_SAMPLING_FREQUENCY 90.0
 #define OBSERVATION_SAMPLING_FREQUENCY 1 
 #define FILE_NAME @"TestData.csv"
 
@@ -39,6 +40,7 @@
 @synthesize accelerometerData;
 @synthesize gryoscopeData;
 @synthesize micFFTData;
+@synthesize micData;
 @synthesize userTouchedPhone;
 
 @synthesize numOfObservationsLabel;
@@ -63,6 +65,7 @@
     self.accelerometerData = [[NSMutableArray alloc] initWithCapacity:1];
     self.gryoscopeData = [[NSMutableArray alloc] initWithCapacity:1];
     self.micFFTData = [[NSMutableArray alloc] initWithCapacity:1];
+    self.micData = [[NSMutableArray alloc] initWithCapacity:1];
     
     // INIT Gryo paramters
     self.motionManager = [[CMMotionManager alloc] init];
@@ -82,6 +85,29 @@
     {
         NSLog(@"No gyroscope on device.");
     }
+    
+    // INIT Microphone
+    
+    NSURL *url = [NSURL fileURLWithPath:@"/dev/null"];
+    
+    NSDictionary *settings = [NSDictionary dictionaryWithObjectsAndKeys:
+                              [NSNumber numberWithFloat: 44100.0],                 AVSampleRateKey,
+                              [NSNumber numberWithInt: kAudioFormatAppleLossless], AVFormatIDKey,
+                              [NSNumber numberWithInt: 1],                         AVNumberOfChannelsKey,
+                              [NSNumber numberWithInt: AVAudioQualityMax],         AVEncoderAudioQualityKey,
+                              nil];
+    
+  	NSError *error;
+    
+  	recorder = [[AVAudioRecorder alloc] initWithURL:url settings:settings error:&error];
+    
+  	if (recorder) {
+  		[recorder prepareToRecord];
+  		recorder.meteringEnabled = YES;
+  		[recorder record];
+        levelTimer = [NSTimer scheduledTimerWithTimeInterval: (1/MICROPHONE_SAMPLING_FREQUENCY) target: self selector: @selector(levelTimerCallback:) userInfo: nil repeats: YES]; // Samples audio ~30 times a second
+  	} else
+  		NSLog(@"Error");
     
     [self startCollecitng];
 }
@@ -116,6 +142,7 @@
     [self.accelerometerData removeAllObjects];
     [self.gryoscopeData removeAllObjects];
     [self.micFFTData removeAllObjects];
+    [self.micData removeAllObjects];
     
     observationsCollected = 0;
     [self.numOfObservationsLabel setText:[NSString stringWithFormat:@"%d", observationsCollected]];
@@ -150,6 +177,26 @@
     [self.accelerometerData addObject:acceleration];
 }
 
+- (void)levelTimerCallback:(NSTimer *)timer {
+	[recorder updateMeters];
+    
+    //const double ALPHA = 0.05;
+	//double peakPowerForChannel = pow(10, (ALPHA * [recorder peakPowerForChannel:0]));
+    
+    [self.micData addObject:[NSNumber numberWithDouble:[recorder peakPowerForChannel:0]]];
+
+	//lowPassResultsOffset = ALPHA * peakPowerForChannel + (1.0 - ALPHA) * lowPassResultsOffset;	
+    
+    //lowPassResults = ALPHA * [recorder peakPowerForChannel:0] + (1.0 - ALPHA) * lowPassResults;	
+    
+	//NSLog(@"%f %f %f" ,[recorder peakPowerForChannel:0], lowPassResults, lowPassResultsOffset);
+    // Sending the updateMeters message refreshes the average and peak power meters. The meter use a logarithmic scale, with -160 being complete quiet and zero being maximum input.
+    
+    //  if (lowPassResults > 0.95)
+	// 	NSLog(@"Mic blow detected");
+    
+}
+
 -(void) touchesBegan: (NSSet *) touches withEvent: (UIEvent *) event 
 {    
     NSSet *allTouches = [event allTouches];
@@ -170,8 +217,10 @@
         NSString* accelObservation = [newObservation processAcclerometer:self.accelerometerData];
         NSString* gryoObservation = [newObservation processGryo:self.gryoscopeData];
         NSString* micFFTObservation = [newObservation processMicFFT:self.micFFTData];
+        NSString* micObservation = [newObservation processMic:self.micData];
+
         
-        NSString *observationString = [NSString stringWithFormat:@"%@, %@, %@\n", accelObservation, gryoObservation, micFFTObservation];
+        NSString *observationString = [NSString stringWithFormat:@"%@, %@, %@, %@\n", accelObservation, gryoObservation, micFFTObservation, micObservation];
         
         // Write Observation to file
         [self.fileWriter saveString:observationString];
@@ -191,6 +240,8 @@
     [self.accelerometerData removeAllObjects];
     [self.gryoscopeData removeAllObjects];
     [self.micFFTData removeAllObjects];
+    [self.micData removeAllObjects];
+
     
     self.userTouchedPhone = FALSE;
 }
@@ -231,6 +282,9 @@
     
     [self.micFFTData release];
     self.micFFTData = nil;
+    
+    [self.micData release];
+    self.micData = nil;
     
     [super dealloc];
 }

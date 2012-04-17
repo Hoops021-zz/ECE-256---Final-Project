@@ -212,6 +212,45 @@
 
 }
 
+- (NSString *) processMic:(NSMutableArray *) micData
+{
+    const double ALPHA = 0.05;
+    double size = [micData count];
+    
+    double sum = 0, sum_low = 0;
+    double min = 1000, min_low = 1000;
+    double max = -1000, max_low = -1000;
+    
+    for(int i = 0; i < size; i++)
+    {
+        double point = [[micData objectAtIndex:i] doubleValue];
+      
+        double peakPowerForChannel = pow(10, (ALPHA * point));
+        
+        sum += peakPowerForChannel;
+        min = MIN(min, peakPowerForChannel);
+        max = MAX(max, peakPowerForChannel);
+        
+        double lowPassResult = ALPHA * point + (1.0 - ALPHA) * lowPassResult;
+        
+        sum_low += lowPassResult;
+        min_low = MIN(min_low, lowPassResult);
+        max_low = MAX(max_low, lowPassResult);
+        
+        //double lowPassResultsOffset = ALPHA * peakPowerForChannel + (1.0 - ALPHA) * lowPassResultsOffset;	
+
+    }
+    
+    NSString *str1 = [NSString stringWithFormat:@"%f, %f, %f", sum, min, max];
+    NSString *str2 = [NSString stringWithFormat:@"%f, %f, %f", sum_low, min_low, max_low];
+    
+    return [NSString stringWithFormat:@"%@, %@", str1, str2];
+
+
+
+}
+
+
 
 - (NSString *) ToString
 {
