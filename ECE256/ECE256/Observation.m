@@ -241,8 +241,8 @@
 
     }
     
-    NSString *str1 = [NSString stringWithFormat:@"%f, %f, %f", sum, min, max];
-    NSString *str2 = [NSString stringWithFormat:@"%f, %f, %f", sum_low, min_low, max_low];
+    NSString *str1 = [NSString stringWithFormat:@"%f, %f, %f", sum/size, min, max];
+    NSString *str2 = [NSString stringWithFormat:@"%f, %f, %f", sum_low/size, min_low, max_low];
     
     return [NSString stringWithFormat:@"%@, %@", str1, str2];
 
