@@ -118,8 +118,8 @@
     double size = [gryoData count];
 
     double sum_X = 0, sum_Y = 0, sum_Z = 0;
-    double min_X = DBL_MAX, min_Y = DBL_MAX, min_Z = DBL_MAX;
-    double max_X = DBL_MIN, max_Y = DBL_MIN, max_Z = DBL_MIN;
+    double min_X = 100, min_Y = 100, min_Z = 100;
+    double max_X = -100, max_Y = -100, max_Z = -100;
     double oneNorm_X = 0, oneNorm_Y = 0, oneNorm_Z = 0;
     double infinityNorm = 0, fNorm = 0; 
     for(int i = 0; i < size; i++)
