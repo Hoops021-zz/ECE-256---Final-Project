@@ -53,8 +53,6 @@
                        + fabs( pow(acceleration.y, 2))
                        + fabs( pow(acceleration.z, 2));
         
-        NSLog(@"%f", acceleration.x);
-        
         if(acceleration.x < min_X) min_X = acceleration.x;
         if(acceleration.y < min_Y) min_Y = acceleration.y;
         if(acceleration.z < min_Z) min_Z = acceleration.z;
@@ -102,6 +100,10 @@
     double kurtosis_X = ((1.0/size)*kurtosisSum_X) / pow((1.0/size)*squaredSum_X_Bottom, 2.0) - 3.0;
     double kurtosis_Y = ((1.0/size)*kurtosisSum_Y) / pow((1.0/size)*squaredSum_Y_Bottom, 2.0) - 3.0;
     double kurtosis_Z = ((1.0/size)*kurtosisSum_Z) / pow((1.0/size)*squaredSum_Z_Bottom, 2.0) - 3.0;
+    
+    double variance_X = (1.0/size)*squaredSum_X_Bottom;
+    double variance_Y = (1.0/size)*squaredSum_Y_Bottom;
+    double variance_Z = (1.0/size)*squaredSum_Z_Bottom;
     
     NSString *str1 = [NSString stringWithFormat:@"%f, %f, %f", min_X, min_Y, min_Z];
     NSString *str2 = [NSString stringWithFormat:@"%f, %f, %f", max_X, max_Y, max_Z];
@@ -185,6 +187,10 @@
     double kurtosis_X = ((1.0/size)*kurtosisSum_X) / pow((1.0/size)*squaredSum_X_Bottom, 2.0) - 3.0;
     double kurtosis_Y = ((1.0/size)*kurtosisSum_Y) / pow((1.0/size)*squaredSum_Y_Bottom, 2.0) - 3.0;
     double kurtosis_Z = ((1.0/size)*kurtosisSum_Z) / pow((1.0/size)*squaredSum_Z_Bottom, 2.0) - 3.0;
+    
+    double variance_X = (1.0/size)*squaredSum_X_Bottom;
+    double variance_Y = (1.0/size)*squaredSum_Y_Bottom;
+    double variance_Z = (1.0/size)*squaredSum_Z_Bottom;
     
     NSString *str1 = [NSString stringWithFormat:@"%f, %f, %f", min_X, min_Y, min_Z];
     NSString *str2 = [NSString stringWithFormat:@"%f, %f, %f", max_X, max_Y, max_Z];

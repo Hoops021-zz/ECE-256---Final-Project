@@ -16,13 +16,13 @@
 
 @interface ViewController ()
 
-#define ACCELEROMETER_SAMPLING_FREQUENCY 90.0
-#define MICROPHONE_SAMPLING_FREQUENCY 90.0
+#define ACCELEROMETER_SAMPLING_FREQUENCY 100.0
+#define MICROPHONE_SAMPLING_FREQUENCY 100.0
 #define OBSERVATION_SAMPLING_FREQUENCY 1 
 #define FILE_NAME @"TestData.csv"
 
 #define MAX_OBSERVATIONS 3
-#define TABLE_CALIBRATION_FACTOR .985
+#define TABLE_CALIBRATION_FACTOR -1.06
 
 
 @end
@@ -173,6 +173,7 @@
 
 - (void)accelerometer:(UIAccelerometer *)accelerometer didAccelerate:(UIAcceleration *)acceleration 
 {
+    //NSLog(@"%.12f", acceleration.z);
     // Add acceleration data to structure
     [self.accelerometerData addObject:acceleration];
 }
@@ -207,10 +208,28 @@
 }
 
 - (void) SampleObservation:(NSTimer *) timer 
-{
+{    
     // If getting data because user touched phone, then ignore
     if(!self.userTouchedPhone && [self tappedOccured:self.accelerometerData])
     {
+        
+        NSString *strX = [NSString string];
+        NSString *strY = [NSString string];
+        NSString *strZ = [NSString string];
+        for(int i = 0; i < [accelerometerData count]; i++)
+        {
+            UIAcceleration * ac = [accelerometerData objectAtIndex:i];
+            strX = [strX stringByAppendingFormat:@"%.12f\n", ac.x];
+            strY = [strY stringByAppendingFormat:@"%.12f\n", ac.y];
+            strZ = [strZ stringByAppendingFormat:@"%.12f\n", ac.z];
+        }
+    
+        [strX writeToFile:[fileWriter getFilePath:@"xData3.csv"] atomically:YES encoding:NSUTF8StringEncoding error:nil];
+        [strY writeToFile:[fileWriter getFilePath:@"yData3.csv"] atomically:YES encoding:NSUTF8StringEncoding error:nil];
+        [strZ writeToFile:[fileWriter getFilePath:@"zData3.csv"] atomically:YES encoding:NSUTF8StringEncoding error:nil];
+        
+        
+        /*
         // create observation
         Observation *newObservation = [[Observation alloc] init];
         
@@ -234,6 +253,24 @@
             [self.fileWriter writeFile:FILE_NAME];
             [self.appStatusLabel setText:@"DONE!"];
         }
+         */
+    }
+    else 
+    {
+        NSString *strX = [NSString string];
+        NSString *strY = [NSString string];
+        NSString *strZ = [NSString string];
+        for(int i = 0; i < [accelerometerData count]; i++)
+        {
+            UIAcceleration * ac = [accelerometerData objectAtIndex:i];
+            strX = [strX stringByAppendingFormat:@"%.12f\n", ac.x];
+            strY = [strY stringByAppendingFormat:@"%.12f\n", ac.y];
+            strZ = [strZ stringByAppendingFormat:@"%.12f\n", ac.z];
+        }
+        
+        [strX writeToFile:[fileWriter getFilePath:@"xData3_null.csv"] atomically:YES encoding:NSUTF8StringEncoding error:nil];
+        [strY writeToFile:[fileWriter getFilePath:@"yData3_null.csv"] atomically:YES encoding:NSUTF8StringEncoding error:nil];
+        [strZ writeToFile:[fileWriter getFilePath:@"zData3_null.csv"] atomically:YES encoding:NSUTF8StringEncoding error:nil];
     }
     
     // Clear old data for new frame
@@ -253,9 +290,9 @@
         //NSLog(@"x: %f", [[acceleration objectAtIndex:i] x]);
         //NSLog(@"y: %f", [[acceleration objectAtIndex:i] y]);
         //NSLog(@"z: %f", [[acceleration objectAtIndex:i] z]);
-        if([[acceleration objectAtIndex:i] z] > (-1 * TABLE_CALIBRATION_FACTOR))
+        if([[acceleration objectAtIndex:i] z] < TABLE_CALIBRATION_FACTOR)
         {
-            NSLog(@"YEE");
+            NSLog(@"YEE - %.12f", [[acceleration objectAtIndex:i] z]);
             return true;
         }
     }
