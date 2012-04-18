@@ -206,6 +206,8 @@
     double size = [micFFTData count];
 //    NSLog(@"%d", (int)size);
     double sum = 0, min = DBL_MAX, max = DBL_MIN;
+    double median = 0;
+    double variance = 0;
     for(int i = 0; i < size; i++)
     {
         float point = [[micFFTData objectAtIndex:i] floatValue];
@@ -214,7 +216,20 @@
         max = MAX(max, point);
     }
     
-    return [NSString stringWithFormat:@"%f, %f, %f", sum/size, min, max];
+    double mean = sum / size;
+    
+    for(int i = 0; i < size; i++)
+    {
+        variance += (([[micFFTData objectAtIndex:i] floatValue] - mean) / size);
+    }
+    
+    
+    NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"self" ascending:YES];
+    NSArray* sortedData = [micFFTData sortedArrayUsingDescriptors:[NSArray arrayWithObject:sortDescriptor]];
+    median = [[sortedData objectAtIndex:(size / 2)] floatValue];
+
+    
+    return [NSString stringWithFormat:@"%f, %f, %f, %f, %f", mean, min, max, median, variance];
 
 }
 
@@ -226,29 +241,52 @@
     double sum = 0, sum_low = 0;
     double min = 1000, min_low = 1000;
     double max = -1000, max_low = -1000;
+    double median = 0, median_low = 0;
+    double variance = 0, variance_low = 0;
+    
+    NSMutableArray* powerVals = [[NSMutableArray alloc] init];
+    NSMutableArray* lowVals = [[NSMutableArray alloc] init];
+
     
     for(int i = 0; i < size; i++)
     {
         double point = [[micData objectAtIndex:i] doubleValue];
       
         double peakPowerForChannel = pow(10, (ALPHA * point));
+        [powerVals addObject:[NSNumber numberWithDouble:peakPowerForChannel]];
         
         sum += peakPowerForChannel;
         min = MIN(min, peakPowerForChannel);
         max = MAX(max, peakPowerForChannel);
         
         double lowPassResult = ALPHA * point + (1.0 - ALPHA) * lowPassResult;
+        [lowVals addObject:[NSNumber numberWithDouble:lowPassResult]];
+
         
         sum_low += lowPassResult;
         min_low = MIN(min_low, lowPassResult);
         max_low = MAX(max_low, lowPassResult);
         
-        //double lowPassResultsOffset = ALPHA * peakPowerForChannel + (1.0 - ALPHA) * lowPassResultsOffset;	
-
     }
     
-    NSString *str1 = [NSString stringWithFormat:@"%f, %f, %f", sum/size, min, max];
-    NSString *str2 = [NSString stringWithFormat:@"%f, %f, %f", sum_low/size, min_low, max_low];
+    double mean = sum / size;
+    double mean_low = sum_low / size;
+    
+    for(int i = 0; i < size; i++)
+    {
+        variance += (([[powerVals objectAtIndex:i] doubleValue] - mean) / size);
+        variance_low += (([[lowVals objectAtIndex:i] doubleValue] - mean_low) / size);
+    }
+    
+    NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"self" ascending:YES];
+    NSArray* sortedPowerVals= [powerVals sortedArrayUsingDescriptors:[NSArray arrayWithObject:sortDescriptor]];
+    median = [[sortedPowerVals objectAtIndex:(size / 2)] doubleValue];
+    
+    NSArray* sortedLowVals= [lowVals sortedArrayUsingDescriptors:[NSArray arrayWithObject:sortDescriptor]];
+    median_low = [[sortedLowVals objectAtIndex:(size / 2)] doubleValue];
+    
+    NSString *str1 = [NSString stringWithFormat:@"%f, %f, %f, %f, %f", mean, min, max, median, variance];
+    NSString *str2 = [NSString stringWithFormat:@"%f, %f, %f, %f, %f", mean_low, min_low, max_low, median_low, variance_low];
     
     return [NSString stringWithFormat:@"%@, %@", str1, str2];
 
