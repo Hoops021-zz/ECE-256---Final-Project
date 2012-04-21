@@ -9,7 +9,6 @@
 #import "ViewController.h"
 #import "RIOInterface.h"
 #import "KeyHelper.h"
-#import "Observation.h"
 #import "CSVWriter.h"
 #import "GryoData.h"
 #import <CoreMotion/CoreMotion.h>
@@ -18,7 +17,7 @@
 
 #define ACCELEROMETER_SAMPLING_FREQUENCY 100.0
 #define MICROPHONE_SAMPLING_FREQUENCY 100.0
-#define OBSERVATION_SAMPLING_FREQUENCY 1 
+#define OBSERVATION_SAMPLING_FREQUENCY 1
 #define FILE_NAME @"TestData.csv"
 
 #define MAX_OBSERVATIONS 3
@@ -40,7 +39,8 @@
 @synthesize accelerometerData;
 @synthesize gryoscopeData;
 @synthesize micFFTData;
-@synthesize micData;
+@synthesize micPeakData;
+@synthesize micAvgData;
 @synthesize userTouchedPhone;
 
 @synthesize numOfObservationsLabel;
@@ -65,7 +65,9 @@
     self.accelerometerData = [[NSMutableArray alloc] initWithCapacity:1];
     self.gryoscopeData = [[NSMutableArray alloc] initWithCapacity:1];
     self.micFFTData = [[NSMutableArray alloc] initWithCapacity:1];
-    self.micData = [[NSMutableArray alloc] initWithCapacity:1];
+    self.micPeakData = [[NSMutableArray alloc] initWithCapacity:1];
+    self.micAvgData = [[NSMutableArray alloc] initWithCapacity:1];
+
     
     // INIT Gryo paramters
     self.motionManager = [[CMMotionManager alloc] init];
@@ -134,7 +136,7 @@
 {
      self.timer = [NSTimer scheduledTimerWithTimeInterval:1.0/OBSERVATION_SAMPLING_FREQUENCY
                                      target:self
-                                   selector:@selector(SampleObservation:)
+                                   selector:@selector(sampleObservation:)
                                    userInfo:nil
                                     repeats:YES]; 
     
@@ -142,7 +144,9 @@
     [self.accelerometerData removeAllObjects];
     [self.gryoscopeData removeAllObjects];
     [self.micFFTData removeAllObjects];
-    [self.micData removeAllObjects];
+    [self.micPeakData removeAllObjects];
+    [self.micAvgData removeAllObjects];
+
     
     observationsCollected = 0;
     [self.numOfObservationsLabel setText:[NSString stringWithFormat:@"%d", observationsCollected]];
@@ -151,14 +155,6 @@
     [self.motionManager startGyroUpdatesToQueue:opQ withHandler:self.gyroHandler];
     [self.rioRef startListening:self];
 
-}
-- (void)frequencyChangedWithValue:(float)newFrequency{
-	NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
-	self.currentFrequency = newFrequency;
-    [self.micFFTData addObject:[NSNumber numberWithFloat:newFrequency]];
-	[pool drain];
-	pool = nil;
-	
 }
 
 - (void) stopCollecting
@@ -171,6 +167,15 @@
     [self.rioRef stopListening];
 }
 
+- (void)frequencyChangedWithValue:(float)newFrequency{
+	NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
+	self.currentFrequency = newFrequency;
+    [self.micFFTData addObject:[NSNumber numberWithFloat:newFrequency]];
+	[pool drain];
+	pool = nil;
+	
+}
+
 - (void)accelerometer:(UIAccelerometer *)accelerometer didAccelerate:(UIAcceleration *)acceleration 
 {
     //NSLog(@"%.12f", acceleration.z);
@@ -179,22 +184,11 @@
 }
 
 - (void)levelTimerCallback:(NSTimer *)timer {
-	[recorder updateMeters];
-    
-    //const double ALPHA = 0.05;
-	//double peakPowerForChannel = pow(10, (ALPHA * [recorder peakPowerForChannel:0]));
-    
-    [self.micData addObject:[NSNumber numberWithDouble:[recorder peakPowerForChannel:0]]];
+	
+    [recorder updateMeters];
+    [self.micPeakData addObject:[NSNumber numberWithDouble:[recorder peakPowerForChannel:0]]];
+    [self.micAvgData addObject:[NSNumber numberWithDouble:[recorder averagePowerForChannel:0]]];
 
-	//lowPassResultsOffset = ALPHA * peakPowerForChannel + (1.0 - ALPHA) * lowPassResultsOffset;	
-    
-    //lowPassResults = ALPHA * [recorder peakPowerForChannel:0] + (1.0 - ALPHA) * lowPassResults;	
-    
-	//NSLog(@"%f %f %f" ,[recorder peakPowerForChannel:0], lowPassResults, lowPassResultsOffset);
-    // Sending the updateMeters message refreshes the average and peak power meters. The meter use a logarithmic scale, with -160 being complete quiet and zero being maximum input.
-    
-    //  if (lowPassResults > 0.95)
-	// 	NSLog(@"Mic blow detected");
     
 }
 
@@ -207,77 +201,153 @@
     }
 }
 
-- (void) SampleObservation:(NSTimer *) timer 
+- (void) sampleObservation:(NSTimer *) timer 
 {    
     // If getting data because user touched phone, then ignore
     if(!self.userTouchedPhone && [self tappedOccured:self.accelerometerData])
     {
+        NSMutableString *observation_x = [NSMutableString stringWithCapacity:1];
+        NSMutableString *observation_y = [NSMutableString stringWithCapacity:1];
+        NSMutableString *observation_z = [NSMutableString stringWithCapacity:1];
         
-        NSString *strX = [NSString string];
-        NSString *strY = [NSString string];
-        NSString *strZ = [NSString string];
-        for(int i = 0; i < [accelerometerData count]; i++)
-        {
-            UIAcceleration * ac = [accelerometerData objectAtIndex:i];
-            strX = [strX stringByAppendingFormat:@"%.12f\n", ac.x];
-            strY = [strY stringByAppendingFormat:@"%.12f\n", ac.y];
-            strZ = [strZ stringByAppendingFormat:@"%.12f\n", ac.z];
-        }
-    
-        [strX writeToFile:[fileWriter getFilePath:@"xData3.csv"] atomically:YES encoding:NSUTF8StringEncoding error:nil];
-        [strY writeToFile:[fileWriter getFilePath:@"yData3.csv"] atomically:YES encoding:NSUTF8StringEncoding error:nil];
-        [strZ writeToFile:[fileWriter getFilePath:@"zData3.csv"] atomically:YES encoding:NSUTF8StringEncoding error:nil];
-        
-        
-        /*
-        // create observation
-        Observation *newObservation = [[Observation alloc] init];
-        
-        NSString* accelObservation = [newObservation processAcclerometer:self.accelerometerData];
-        NSString* gryoObservation = [newObservation processGryo:self.gryoscopeData];
-        NSString* micFFTObservation = [newObservation processMicFFT:self.micFFTData];
-        NSString* micObservation = [newObservation processMic:self.micData];
+        [observation_x appendString:@"ACCEL_X,"];
+        [observation_y appendString:@"ACCEL_Y,"];
+        [observation_z appendString:@"ACCEL_Z,"];
 
         
-        NSString *observationString = [NSString stringWithFormat:@"%@, %@, %@, %@\n", accelObservation, gryoObservation, micFFTObservation, micObservation];
+        for (int i = 0; i <  [accelerometerData count]; i++) 
+        {
+            UIAcceleration *acceleration = [accelerometerData objectAtIndex:i];
+            [observation_x appendString:[NSString stringWithFormat:@"%f",acceleration.x]];
+            [observation_y appendString:[NSString stringWithFormat:@"%f",acceleration.y]];
+            [observation_z appendString:[NSString stringWithFormat:@"%f",acceleration.z]];
+            
+            if (i == [accelerometerData count] - 1) 
+            {
+                [observation_x appendString:@"\n"];
+                [observation_y appendString:@"\n"];
+                [observation_z appendString:@"\n"];
+
+            }
+            else 
+            {
+                [observation_x appendString:@","];
+                [observation_y appendString:@","];
+                [observation_z appendString:@","];
+            }
+
+        }
         
-        // Write Observation to file
-        [self.fileWriter saveString:observationString];
-        //[self.fileWriter writeFeature:newFeature atFile:FILE_NAME];
+        [self.fileWriter saveString:observation_x];
+        [self.fileWriter saveString:observation_y];
+        [self.fileWriter saveString:observation_z];
         
+        observation_x = [NSMutableString stringWithCapacity:1];
+        observation_y = [NSMutableString stringWithCapacity:1];
+        observation_z = [NSMutableString stringWithCapacity:1];
+        
+        [observation_x appendString:@"GYRO_X,"];
+        [observation_y appendString:@"GYRO_Y,"];
+        [observation_z appendString:@"GYRO_Z,"];
+        
+        
+        for (int i = 0; i <  [gryoscopeData count]; i++) 
+        {
+            GryoData *gyration = [gryoscopeData objectAtIndex:i];
+            [observation_x appendString:[NSString stringWithFormat:@"%f",gyration.x]];
+            [observation_y appendString:[NSString stringWithFormat:@"%f",gyration.y]];
+            [observation_z appendString:[NSString stringWithFormat:@"%f",gyration.z]];
+            
+            if (i == [gryoscopeData count] - 1) 
+            {
+                [observation_x appendString:@"\n"];
+                [observation_y appendString:@"\n"];
+                [observation_z appendString:@"\n"];
+                
+            }
+            else 
+            {
+                [observation_x appendString:@","];
+                [observation_y appendString:@","];
+                [observation_z appendString:@","];
+            }
+            
+        }
+        
+        [self.fileWriter saveString:observation_x];
+        [self.fileWriter saveString:observation_y];
+        [self.fileWriter saveString:observation_z];
+        
+        NSMutableString *observation_micPeak = [NSMutableString stringWithCapacity:1];
+        NSMutableString *observation_micAvg = [NSMutableString stringWithCapacity:1];
+
+        
+        [observation_micPeak appendString:@"MIC_PEAK,"];
+        [observation_micAvg appendString:@"MIC_AVG,"];
+
+                
+        for (int i = 0; i <  [micPeakData count]; i++) 
+        {
+            double peak =[[micPeakData objectAtIndex:i] doubleValue];
+            double avg = [[micAvgData objectAtIndex:i] doubleValue];
+
+            [observation_micPeak appendString:[NSString stringWithFormat:@"%f",peak]];
+            [observation_micAvg appendString:[NSString stringWithFormat:@"%f",avg]];
+
+            
+            if (i == [micPeakData count] - 1) 
+            {
+                [observation_micPeak appendString:@"\n"];
+                [observation_micAvg appendString:@"\n"];
+                
+            }
+            else 
+            {
+                [observation_micPeak appendString:@","];
+                [observation_micAvg appendString:@","];
+            }
+            
+        }
+        
+        [self.fileWriter saveString:observation_micPeak];
+        [self.fileWriter saveString:observation_micAvg];
+
+ 
         observationsCollected++;
         [self.numOfObservationsLabel setText:[NSString stringWithFormat:@"%d", observationsCollected]];
+        
         if(observationsCollected == MAX_OBSERVATIONS)
         {
             [self stopCollecting];
             [self.fileWriter writeFile:FILE_NAME];
             [self.appStatusLabel setText:@"DONE!"];
         }
-         */
     }
     else 
     {
-        NSString *strX = [NSString string];
-        NSString *strY = [NSString string];
-        NSString *strZ = [NSString string];
-        for(int i = 0; i < [accelerometerData count]; i++)
-        {
-            UIAcceleration * ac = [accelerometerData objectAtIndex:i];
-            strX = [strX stringByAppendingFormat:@"%.12f\n", ac.x];
-            strY = [strY stringByAppendingFormat:@"%.12f\n", ac.y];
-            strZ = [strZ stringByAppendingFormat:@"%.12f\n", ac.z];
-        }
-        
-        [strX writeToFile:[fileWriter getFilePath:@"xData3_null.csv"] atomically:YES encoding:NSUTF8StringEncoding error:nil];
-        [strY writeToFile:[fileWriter getFilePath:@"yData3_null.csv"] atomically:YES encoding:NSUTF8StringEncoding error:nil];
-        [strZ writeToFile:[fileWriter getFilePath:@"zData3_null.csv"] atomically:YES encoding:NSUTF8StringEncoding error:nil];
+//        NSString *strX = [NSString string];
+//        NSString *strY = [NSString string];
+//        NSString *strZ = [NSString string];
+//        for(int i = 0; i < [accelerometerData count]; i++)
+//        {
+//            UIAcceleration * ac = [accelerometerData objectAtIndex:i];
+//            strX = [strX stringByAppendingFormat:@"%.12f\n", ac.x];
+//            strY = [strY stringByAppendingFormat:@"%.12f\n", ac.y];
+//            strZ = [strZ stringByAppendingFormat:@"%.12f\n", ac.z];
+//        }
+//        
+//        [strX writeToFile:[fileWriter getFilePath:@"xData3_null.csv"] atomically:YES encoding:NSUTF8StringEncoding error:nil];
+//        [strY writeToFile:[fileWriter getFilePath:@"yData3_null.csv"] atomically:YES encoding:NSUTF8StringEncoding error:nil];
+//        [strZ writeToFile:[fileWriter getFilePath:@"zData3_null.csv"] atomically:YES encoding:NSUTF8StringEncoding error:nil];
     }
     
     // Clear old data for new frame
     [self.accelerometerData removeAllObjects];
     [self.gryoscopeData removeAllObjects];
     [self.micFFTData removeAllObjects];
-    [self.micData removeAllObjects];
+    [self.micPeakData removeAllObjects];
+    [self.micAvgData removeAllObjects];
+
 
     
     self.userTouchedPhone = FALSE;
@@ -320,8 +390,11 @@
     [self.micFFTData release];
     self.micFFTData = nil;
     
-    [self.micData release];
-    self.micData = nil;
+    [self.micPeakData release];
+    self.micPeakData = nil;
+    
+    [self.micAvgData release];
+    self.micAvgData = nil;
     
     [super dealloc];
 }

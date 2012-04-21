@@ -8,14 +8,11 @@
 
 #import <Foundation/Foundation.h>
 
-@class Feature;
 
 @interface CSVWriter : NSObject
 {
     NSMutableArray *lines;
 }
-
-- (void) writeFeature:(Feature *) f atFile:(NSString *) fileName;
 
 - (void) saveString:(NSString *) str;
 

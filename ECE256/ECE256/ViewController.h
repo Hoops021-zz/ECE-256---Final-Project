@@ -27,7 +27,8 @@
     NSMutableArray *accelerometerData;
     NSMutableArray *gryoscopeData;
     NSMutableArray *micFFTData;
-    NSMutableArray *micData;
+    NSMutableArray *micPeakData;
+    NSMutableArray *micAvgData;
     BOOL userTouchedPhone;    
 
     int observationsCollected;
@@ -51,13 +52,11 @@
 @property (nonatomic, retain) NSMutableArray *accelerometerData;
 @property (nonatomic, retain) NSMutableArray *gryoscopeData;
 @property (nonatomic, retain) NSMutableArray *micFFTData;
-@property (nonatomic, retain) NSMutableArray *micData;
+@property (nonatomic, retain) NSMutableArray *micPeakData;
+@property (nonatomic, retain) NSMutableArray *micAvgData;
 @property (nonatomic) BOOL userTouchedPhone;
-
 @property (nonatomic, retain) IBOutlet UILabel *numOfObservationsLabel;
 @property (nonatomic, retain) IBOutlet UILabel *appStatusLabel;
 
-
-- (void) SampleFeature:(NSTimer *) timer;
 
 @end

@@ -8,8 +8,6 @@
 
 #import "CSVWriter.h"
 
-#import "Observation.h"
-
 @implementation CSVWriter
 
 - (id) init
@@ -21,12 +19,6 @@
     return self;
 }
 
-- (void) writeFeature:(Feature *) f atFile:(NSString*) fileName
-{
-    //NSString *line = [f ToString];
-    //[line writeToFile:[self getFilePath: fileName] atomically:YES encoding:NSUTF8StringEncoding error:nil];
-}
-
 - (void) saveString:(NSString *) str
 {
     [lines addObject:str];
@@ -35,7 +27,7 @@
 
 - (void) writeFile:(NSString *) fileName
 {
-    NSString *finalData = @"ACCEL_MIN_X, ACCEL_MIN_Y, ACCEL_MIN_Z, ACCEL_MAX_X, ACCEL_MAX_Y, ACCEL_MAX_Z, ACCEL_SKEWNESS_X, ACCEL_SKEWNESS_Y, ACCEL_SKEWNESS_Z, ACCEL_KURTOSIS_X, ACCEL_KURTOSIS_Y, ACCEL_KURTOSIS_Z, ACCEL_ONE_NORM, ACCELL_INFINITY_NORM, ACCEL_FORBENIUS_NORM, ACCEL_MEAN_X, ACCEL_MEAN_Y, ACCEL_MEAN_Z, GRYO_MIN_X, GRYO_MIN_Y, GRYO_MIN_Z, GRYO_MAX_X, GRYO_MAX_Y, GRYO_MAX_Z, GRYO_SKEWNESS_X, GRYO_SKEWNESS_Y, GRYO_SKEWNESS_Z, GRYO_KURTOSIS_X, GRYO_KURTOSIS_Y, GRYO_KURTOSIS_Z, GRYO_ONE_NORM, GRYOL_INFINITY_NORM, GRYO_FORBENIUS_NORM, GRYO_MEAN_X, GRYO_MEAN_Y, GRYO_MEAN_Z, MICFREQ_MEAN, MICFREQ_MIN, MICFREQ_MAX, MICFREQ_MED, MICFREQ_VAR, MICPOW_MEAN, MICPOW_MIN, MICPOW_MAX, MICPOW_MED, MICPOW_VAR, MICLOW_MEAN, MICLOW_MIN, MICLOW_MAX, MICLOW_MED, MICLOW_VAR\n";
+    NSString *finalData = @"";
     
     for(int i = 0; i < [lines count]; i++)
     {
