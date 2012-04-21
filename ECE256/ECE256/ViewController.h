@@ -29,7 +29,10 @@
     NSMutableArray *micFFTData;
     NSMutableArray *micPeakData;
     NSMutableArray *micAvgData;
-    BOOL userTouchedPhone;    
+    BOOL userTouchedPhone;
+    BOOL tapState;
+    int tapStateCounter;
+
 
     int observationsCollected;
     
@@ -55,6 +58,8 @@
 @property (nonatomic, retain) NSMutableArray *micPeakData;
 @property (nonatomic, retain) NSMutableArray *micAvgData;
 @property (nonatomic) BOOL userTouchedPhone;
+@property (nonatomic) BOOL tapState;
+@property (nonatomic) int tapStateCounter;
 @property (nonatomic, retain) IBOutlet UILabel *numOfObservationsLabel;
 @property (nonatomic, retain) IBOutlet UILabel *appStatusLabel;
 

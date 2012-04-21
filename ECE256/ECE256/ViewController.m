@@ -17,11 +17,11 @@
 
 #define ACCELEROMETER_SAMPLING_FREQUENCY 100.0
 #define MICROPHONE_SAMPLING_FREQUENCY 100.0
-#define OBSERVATION_SAMPLING_FREQUENCY 1
+#define OBSERVATION_SAMPLING_FREQUENCY 2
 #define FILE_NAME @"TestData.csv"
 
 #define MAX_OBSERVATIONS 3
-#define TABLE_CALIBRATION_FACTOR -1.06
+#define TABLE_CALIBRATION_FACTOR -1.02
 
 
 @end
@@ -42,6 +42,7 @@
 @synthesize micPeakData;
 @synthesize micAvgData;
 @synthesize userTouchedPhone;
+@synthesize tapState;
 
 @synthesize numOfObservationsLabel;
 @synthesize appStatusLabel;
@@ -80,7 +81,8 @@
             CMRotationRate rotateData = gyroData.rotationRate;
             GryoData *data = [[GryoData alloc] initWithData:rotateData];
             //NSLog(@"%.12f - %.12f - %.12f", rotateData.x, rotateData.y, rotateData.z);
-            [self.gryoscopeData addObject:data];
+            if(tapState)
+                [self.gryoscopeData addObject:data];
         };
     }
     else 
@@ -111,6 +113,8 @@
   	} else
   		NSLog(@"Error");
     
+    tapState = NO;
+    tapStateCounter = 0;
     [self startCollecitng];
 }
 
@@ -134,11 +138,11 @@
 
 - (void) startCollecitng
 {
-     self.timer = [NSTimer scheduledTimerWithTimeInterval:1.0/OBSERVATION_SAMPLING_FREQUENCY
-                                     target:self
-                                   selector:@selector(sampleObservation:)
-                                   userInfo:nil
-                                    repeats:YES]; 
+//     self.timer = [NSTimer scheduledTimerWithTimeInterval:1.0/OBSERVATION_SAMPLING_FREQUENCY
+//                                     target:self
+//                                   selector:@selector(sampleObservation:)
+//                                   userInfo:nil
+//                                    repeats:YES]; 
     
     // Clear old data
     [self.accelerometerData removeAllObjects];
@@ -170,7 +174,8 @@
 - (void)frequencyChangedWithValue:(float)newFrequency{
 	NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
 	self.currentFrequency = newFrequency;
-    [self.micFFTData addObject:[NSNumber numberWithFloat:newFrequency]];
+    if(tapState)
+        [self.micFFTData addObject:[NSNumber numberWithFloat:newFrequency]];
 	[pool drain];
 	pool = nil;
 	
@@ -178,16 +183,20 @@
 
 - (void)accelerometer:(UIAccelerometer *)accelerometer didAccelerate:(UIAcceleration *)acceleration 
 {
-    //NSLog(@"%.12f", acceleration.z);
+    NSLog(@"%.12f", acceleration.z);
     // Add acceleration data to structure
-    [self.accelerometerData addObject:acceleration];
+    //[self.accelerometerData addObject:acceleration];
+    [self tappedOccured2:acceleration];
 }
 
 - (void)levelTimerCallback:(NSTimer *)timer {
 	
     [recorder updateMeters];
-    [self.micPeakData addObject:[NSNumber numberWithDouble:[recorder peakPowerForChannel:0]]];
-    [self.micAvgData addObject:[NSNumber numberWithDouble:[recorder averagePowerForChannel:0]]];
+    if(tapState)
+    {
+        [self.micPeakData addObject:[NSNumber numberWithDouble:[recorder peakPowerForChannel:0]]];
+        [self.micAvgData addObject:[NSNumber numberWithDouble:[recorder averagePowerForChannel:0]]];
+    }
 
     
 }
@@ -201,10 +210,13 @@
     }
 }
 
-- (void) sampleObservation:(NSTimer *) timer 
+
+//- (void) sampleObservation:(NSTimer *) timer 
+- (void) sampleObservation 
 {    
     // If getting data because user touched phone, then ignore
-    if(!self.userTouchedPhone && [self tappedOccured:self.accelerometerData])
+    //if(!self.userTouchedPhone && [self tappedOccured:self.accelerometerData])
+    if(!self.userTouchedPhone)
     {
         NSMutableString *observation_x = [NSMutableString stringWithCapacity:1];
         NSMutableString *observation_y = [NSMutableString stringWithCapacity:1];
@@ -368,6 +380,33 @@
     }
     
     return FALSE;
+}
+
+- (void) tappedOccured2:(UIAcceleration *)acceleration 
+{
+    if(!tapState)
+    {
+        if([acceleration z] < TABLE_CALIBRATION_FACTOR)
+        {
+                NSLog(@"Begin Tap - %.12f", [acceleration z]);
+                tapState = YES;
+                tapStateCounter = 0;
+                [self.accelerometerData addObject:acceleration];
+        }   
+    }
+    else 
+    {
+        tapStateCounter++;
+        [self.accelerometerData addObject:acceleration];
+        
+        if (tapStateCounter == 15)
+        {
+            tapState = NO;
+            tapStateCounter = 0;
+            NSLog(@"End Tap - %.12f", [acceleration z]);
+            [self sampleObservation];
+        }
+    }
 }
 
 - (void) dealloc
