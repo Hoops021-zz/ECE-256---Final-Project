@@ -232,9 +232,9 @@
         for (int i = 0; i <  [accelerometerData count]; i++) 
         {
             UIAcceleration *acceleration = [accelerometerData objectAtIndex:i];
-            [observation_x appendString:[NSString stringWithFormat:@"%f",acceleration.x]];
-            [observation_y appendString:[NSString stringWithFormat:@"%f",acceleration.y]];
-            [observation_z appendString:[NSString stringWithFormat:@"%f",acceleration.z]];
+            [observation_x appendString:[NSString stringWithFormat:@"%.12f",acceleration.x]];
+            [observation_y appendString:[NSString stringWithFormat:@"%.12f",acceleration.y]];
+            [observation_z appendString:[NSString stringWithFormat:@"%.12f",acceleration.z]];
             
             if (i == [accelerometerData count] - 1) 
             {
@@ -268,9 +268,9 @@
         for (int i = 0; i <  [gryoscopeData count]; i++) 
         {
             GryoData *gyration = [gryoscopeData objectAtIndex:i];
-            [observation_x appendString:[NSString stringWithFormat:@"%f",gyration.x]];
-            [observation_y appendString:[NSString stringWithFormat:@"%f",gyration.y]];
-            [observation_z appendString:[NSString stringWithFormat:@"%f",gyration.z]];
+            [observation_x appendString:[NSString stringWithFormat:@"%.12f",gyration.x]];
+            [observation_y appendString:[NSString stringWithFormat:@"%.12f",gyration.y]];
+            [observation_z appendString:[NSString stringWithFormat:@"%.12f",gyration.z]];
             
             if (i == [gryoscopeData count] - 1) 
             {
@@ -305,8 +305,8 @@
             double peak =[[micPeakData objectAtIndex:i] doubleValue];
             double avg = [[micAvgData objectAtIndex:i] doubleValue];
 
-            [observation_micPeak appendString:[NSString stringWithFormat:@"%f",peak]];
-            [observation_micAvg appendString:[NSString stringWithFormat:@"%f",avg]];
+            [observation_micPeak appendString:[NSString stringWithFormat:@"%.12f",peak]];
+            [observation_micAvg appendString:[NSString stringWithFormat:@"%.12f",avg]];
 
             
             if (i == [micPeakData count] - 1) 
