@@ -20,7 +20,7 @@
 #define OBSERVATION_SAMPLING_FREQUENCY 2
 #define FILE_NAME @"TestData.csv"
 
-#define MAX_OBSERVATIONS 3
+#define MAX_OBSERVATIONS 15
 #define TABLE_CALIBRATION_FACTOR -1.02
 
 
@@ -43,6 +43,8 @@
 @synthesize micAvgData;
 @synthesize userTouchedPhone;
 @synthesize tapState;
+@synthesize tapStateCounter;
+
 
 @synthesize numOfObservationsLabel;
 @synthesize appStatusLabel;
@@ -183,7 +185,7 @@
 
 - (void)accelerometer:(UIAccelerometer *)accelerometer didAccelerate:(UIAcceleration *)acceleration 
 {
-    NSLog(@"%.12f", acceleration.z);
+    //NSLog(@"%.12f", acceleration.z);
     // Add acceleration data to structure
     //[self.accelerometerData addObject:acceleration];
     [self tappedOccured2:acceleration];
@@ -374,7 +376,7 @@
         //NSLog(@"z: %f", [[acceleration objectAtIndex:i] z]);
         if([[acceleration objectAtIndex:i] z] < TABLE_CALIBRATION_FACTOR)
         {
-            NSLog(@"YEE - %.12f", [[acceleration objectAtIndex:i] z]);
+            //NSLog(@"YEE - %.12f", [[acceleration objectAtIndex:i] z]);
             return true;
         }
     }
@@ -388,7 +390,7 @@
     {
         if([acceleration z] < TABLE_CALIBRATION_FACTOR)
         {
-                NSLog(@"Begin Tap - %.12f", [acceleration z]);
+               // NSLog(@"Begin Tap - %.12f", [acceleration z]);
                 tapState = YES;
                 tapStateCounter = 0;
                 [self.accelerometerData addObject:acceleration];
@@ -403,7 +405,7 @@
         {
             tapState = NO;
             tapStateCounter = 0;
-            NSLog(@"End Tap - %.12f", [acceleration z]);
+            //NSLog(@"End Tap - %.12f", [acceleration z]);
             [self sampleObservation];
         }
     }
