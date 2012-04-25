@@ -20,8 +20,8 @@
 #define OBSERVATION_SAMPLING_FREQUENCY 2
 #define FILE_NAME @"TestData.csv"
 
-#define MAX_OBSERVATIONS 15
-#define TABLE_CALIBRATION_FACTOR -1.02
+#define MAX_OBSERVATIONS 200
+#define TABLE_CALIBRATION_FACTOR -1.027
 
 
 @end
@@ -185,7 +185,7 @@
 
 - (void)accelerometer:(UIAccelerometer *)accelerometer didAccelerate:(UIAcceleration *)acceleration 
 {
-    //NSLog(@"%.12f", acceleration.z);
+    NSLog(@"%.12f", acceleration.z);
     // Add acceleration data to structure
     //[self.accelerometerData addObject:acceleration];
     [self tappedOccured2:acceleration];
