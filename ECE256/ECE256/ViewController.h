@@ -32,12 +32,23 @@
     BOOL userTouchedPhone;
     BOOL tapState;
     int tapStateCounter;
+    double tableCalibFactor;
 
 
     int observationsCollected;
     
     IBOutlet UILabel *numOfObservationsLabel;
     IBOutlet UILabel *appStatusLabel;
+    IBOutlet UILabel *calibrationLabel;
+
+    
+    IBOutlet UIButton *clearButton;
+    IBOutlet UIButton *writeButton;
+    IBOutlet UIButton *startStopButton;
+
+    
+    IBOutlet UISlider *calibrationSlider;
+
     
     AVAudioRecorder *recorder; // Set up AVAudioRecorder instance variable
     NSTimer *levelTimer;
@@ -60,8 +71,23 @@
 @property (nonatomic) BOOL userTouchedPhone;
 @property (nonatomic) BOOL tapState;
 @property (nonatomic) int tapStateCounter;
+@property (nonatomic) double tableCalibFactor;
+
 @property (nonatomic, retain) IBOutlet UILabel *numOfObservationsLabel;
 @property (nonatomic, retain) IBOutlet UILabel *appStatusLabel;
+@property (nonatomic, retain) IBOutlet UILabel *calibrationLabel;
+
+@property (nonatomic, retain) IBOutlet UIButton *clearButton;
+@property (nonatomic, retain) IBOutlet UIButton *writeButton;
+@property (nonatomic, retain) IBOutlet UIButton *startStopButton;
+@property (nonatomic, retain) IBOutlet UISlider *calibrationSlider;
+
+
+- (IBAction) doClearButton;
+- (IBAction) doWriteButton;
+- (IBAction) sliderValueChanged:(id)sender;  
+
+
 
 
 @end

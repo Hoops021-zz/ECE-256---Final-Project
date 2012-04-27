@@ -44,6 +44,11 @@
 	return [documentDirectory stringByAppendingPathComponent:fileName];
 }
 
+- (void) clear
+{
+    [lines removeAllObjects];
+}
+
 - (void) dealloc
 {
     [lines release];

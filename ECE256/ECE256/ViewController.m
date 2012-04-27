@@ -21,7 +21,6 @@
 #define FILE_NAME @"TestData.csv"
 
 #define MAX_OBSERVATIONS 200
-#define TABLE_CALIBRATION_FACTOR -1.027
 
 
 @end
@@ -44,14 +43,24 @@
 @synthesize userTouchedPhone;
 @synthesize tapState;
 @synthesize tapStateCounter;
-
+@synthesize tableCalibFactor;
 
 @synthesize numOfObservationsLabel;
 @synthesize appStatusLabel;
+@synthesize calibrationLabel;
+
+@synthesize clearButton;
+@synthesize writeButton;
+@synthesize startStopButton;
+@synthesize calibrationSlider;
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    self.tableCalibFactor = -1.027;
+    [self.calibrationLabel setText:[NSString stringWithFormat:@"%.3f", tableCalibFactor]];
+
     
     // INIT Microphone FFT
     self.rioRef = [RIOInterface sharedInstance];
@@ -332,9 +341,7 @@
         
         if(observationsCollected == MAX_OBSERVATIONS)
         {
-            [self stopCollecting];
-            [self.fileWriter writeFile:FILE_NAME];
-            [self.appStatusLabel setText:@"DONE!"];
+            [self writeToFile];
         }
     }
     else 
@@ -367,6 +374,43 @@
     self.userTouchedPhone = FALSE;
 }
 
+- (IBAction) sliderValueChanged:(UISlider *)sender 
+{  
+    tableCalibFactor = [sender value];
+    [self.calibrationLabel setText:[NSString stringWithFormat:@"%.3f", tableCalibFactor]];
+}
+
+- (void) writeToFile
+{
+    [self.appStatusLabel setText:@"Writing..."];
+    [self.fileWriter writeFile:FILE_NAME];
+    [self.appStatusLabel setText:@"DONE!"];
+    [self clearData];
+}
+
+- (void) clearData
+{
+    [self stopCollecting];
+    [self.accelerometerData removeAllObjects];
+    [self.gryoscopeData removeAllObjects];
+    [self.micFFTData removeAllObjects];
+    [self.micPeakData removeAllObjects];
+    [self.micAvgData removeAllObjects];
+    [fileWriter clear];
+    observationsCollected = 0;
+    [self.numOfObservationsLabel setText:[NSString stringWithFormat:@"%d", observationsCollected]];
+}
+
+- (IBAction) doClearButton;
+{
+    [self clearData];
+
+}
+- (IBAction) doWriteButton
+{
+    [self writeToFile];
+}
+
 - (bool) tappedOccured:(NSMutableArray *) acceleration
 {
     for(int i = 0; i < [acceleration count]; i++)
@@ -374,7 +418,7 @@
         //NSLog(@"x: %f", [[acceleration objectAtIndex:i] x]);
         //NSLog(@"y: %f", [[acceleration objectAtIndex:i] y]);
         //NSLog(@"z: %f", [[acceleration objectAtIndex:i] z]);
-        if([[acceleration objectAtIndex:i] z] < TABLE_CALIBRATION_FACTOR)
+        if([[acceleration objectAtIndex:i] z] < tableCalibFactor)
         {
             //NSLog(@"YEE - %.12f", [[acceleration objectAtIndex:i] z]);
             return true;
@@ -388,7 +432,7 @@
 {
     if(!tapState)
     {
-        if([acceleration z] < TABLE_CALIBRATION_FACTOR)
+        if([acceleration z] < tableCalibFactor)
         {
                // NSLog(@"Begin Tap - %.12f", [acceleration z]);
                 tapState = YES;

@@ -20,6 +20,8 @@
 
 - (NSString *) getFilePath: (NSString*) fileName;
 
+- (void) clear;
+
 
 
 @end
